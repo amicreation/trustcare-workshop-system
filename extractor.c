@@ -5,87 +5,99 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     // 1. Show a brief startup notice
-    MessageBox(NULL, 
-        "Trust Care Workshop Management System is preparing to start.\n\n"
-        "Please click OK to begin. The application will launch in a few seconds.", 
-        "Trust Care", 
+    MessageBoxW(NULL, 
+        L"Trust Care Workshop Management System is preparing to start.\n\n"
+        L"Please click OK to begin. The application will launch in a few seconds.", 
+        L"Trust Care", 
         MB_OK | MB_ICONINFORMATION);
 
-    // 2. Get temporary directory path
-    char tempPath[MAX_PATH];
-    GetTempPath(MAX_PATH, tempPath);
+    // 2. Get temporary directory path (Unicode)
+    wchar_t tempPath[MAX_PATH];
+    GetTempPathW(MAX_PATH, tempPath);
     
-    char zipPath[MAX_PATH];
-    sprintf(zipPath, "%sTrustCareTemp.zip", tempPath);
+    // 3. Create a unique temporary ZIP file path (Unicode)
+    wchar_t zipPath[MAX_PATH];
+    if (GetTempFileNameW(tempPath, L"TC_", 0, zipPath) == 0) {
+        MessageBoxW(NULL, L"Failed to create a unique temporary file path.", L"Error", MB_OK | MB_ICONERROR);
+        return 1;
+    }
     
-    char destPath[MAX_PATH];
-    sprintf(destPath, "%sTrustCareApp", tempPath);
+    // 4. Create a unique destination directory path using dynamic tick count
+    wchar_t destPath[MAX_PATH];
+    swprintf(destPath, MAX_PATH, L"%sTrustCareApp_%lu", tempPath, GetTickCount());
 
-    // 3. Load the embedded ZIP resource
-    HRSRC hRes = FindResource(NULL, "APP_ZIP", RT_RCDATA);
+    // 5. Load the embedded ZIP resource
+    HRSRC hRes = FindResourceW(NULL, L"APP_ZIP", (LPCWSTR)RT_RCDATA);
     if (!hRes) {
-        MessageBox(NULL, "Failed to find internal resources.", "Error", MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Failed to find internal resources.", L"Error", MB_OK | MB_ICONERROR);
+        DeleteFileW(zipPath);
         return 1;
     }
     
     HGLOBAL hGlobal = LoadResource(NULL, hRes);
     if (!hGlobal) {
-        MessageBox(NULL, "Failed to load internal resources.", "Error", MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Failed to load internal resources.", L"Error", MB_OK | MB_ICONERROR);
+        DeleteFileW(zipPath);
         return 1;
     }
     
     void* pData = LockResource(hGlobal);
     DWORD size = SizeofResource(NULL, hRes);
     if (!pData || size == 0) {
-        MessageBox(NULL, "Internal resources are empty.", "Error", MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Internal resources are empty.", L"Error", MB_OK | MB_ICONERROR);
+        DeleteFileW(zipPath);
         return 1;
     }
 
-    // 4. Write the ZIP data to %TEMP%\TrustCareTemp.zip
-    FILE* f = fopen(zipPath, "wb");
+    // 6. Write the ZIP data to the unique temp file
+    FILE* f = _wfopen(zipPath, L"wb");
     if (!f) {
-        MessageBox(NULL, "Failed to write temporary files.", "Error", MB_OK | MB_ICONERROR);
+        wchar_t errMsg[512];
+        swprintf(errMsg, 512, L"Failed to write temporary file.\nPath: %s\nError code: %d", zipPath, GetLastError());
+        MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
+        DeleteFileW(zipPath);
         return 1;
     }
     fwrite(pData, 1, size, f);
     fclose(f);
 
-    // 5. Create the destination folder and extract using PowerShell
-    char psCmd[1024];
-    sprintf(psCmd, "-Command \"if (!(Test-Path '%s')) { New-Item -ItemType Directory -Path '%s' }; Expand-Archive -Path '%s' -DestinationPath '%s' -Force\"", destPath, destPath, zipPath, destPath);
+    // 7. Create the destination folder and extract using PowerShell (Unicode execution)
+    wchar_t psCmd[1536];
+    swprintf(psCmd, 1536, L"-Command \"if (!(Test-Path '%s')) { New-Item -ItemType Directory -Path '%s' }; Expand-Archive -Path '%s' -DestinationPath '%s' -Force\"", destPath, destPath, zipPath, destPath);
 
-    SHELLEXECUTEINFO sei;
+    SHELLEXECUTEINFOW sei;
     ZeroMemory(&sei, sizeof(sei));
     sei.cbSize = sizeof(sei);
     sei.fMask = SEE_MASK_NOCLOSEPROCESS;
-    sei.lpVerb = "open";
-    sei.lpFile = "powershell.exe";
+    sei.lpVerb = L"open";
+    sei.lpFile = L"powershell.exe";
     sei.lpParameters = psCmd;
     sei.nShow = SW_HIDE; // HIDE the PowerShell window!
 
-    if (ShellExecuteEx(&sei)) {
+    if (ShellExecuteExW(&sei)) {
         WaitForSingleObject(sei.hProcess, INFINITE); // Wait for extraction to complete
         CloseHandle(sei.hProcess);
     } else {
-        MessageBox(NULL, "Failed to extract application files.", "Error", MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Failed to extract application files.", L"Error", MB_OK | MB_ICONERROR);
+        DeleteFileW(zipPath);
         return 1;
     }
 
     // Delete the temporary zip file after extraction
-    DeleteFile(zipPath);
+    DeleteFileW(zipPath);
 
-    // 6. Run the extracted launcher TrustCare.exe
-    char exePath[MAX_PATH];
-    sprintf(exePath, "%s\\TrustCare.exe", destPath);
+    // 8. Run the extracted launcher TrustCare.exe
+    wchar_t exePath[MAX_PATH];
+    swprintf(exePath, MAX_PATH, L"%s\\TrustCare.exe", destPath);
 
     ZeroMemory(&sei, sizeof(sei));
     sei.cbSize = sizeof(sei);
-    sei.lpVerb = "open";
+    sei.lpVerb = L"open";
     sei.lpFile = exePath;
     sei.nShow = SW_SHOWNORMAL;
 
-    if (!ShellExecuteEx(&sei)) {
-        MessageBox(NULL, "Failed to launch the application.", "Error", MB_OK | MB_ICONERROR);
+    if (!ShellExecuteExW(&sei)) {
+        MessageBoxW(NULL, L"Failed to launch the application.", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 

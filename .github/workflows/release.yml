@@ -35,7 +35,7 @@ jobs:
       - name: Install Composer Dependencies
         run: |
           cd backend
-          composer install --no-dev --optimize-autoloader
+          composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: Generate Application Key
         run: |

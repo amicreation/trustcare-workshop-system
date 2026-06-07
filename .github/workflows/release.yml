@@ -54,12 +54,19 @@ jobs:
 
       - name: Package Release ZIP
         run: |
-          zip -r trustcare-workshop-system.zip TrustCare.exe backend bin run.bat -x "backend/node_modules/*" "backend/tests/*" "backend/storage/logs/*" "backend/.phpunit.result.cache" "**/node_modules/*" "frontend/*" ".git/*" ".github/*" "build-production.js" "launcher.c"
+          zip -r trustcare-workshop-system.zip TrustCare.exe backend bin run.bat -x "backend/node_modules/*" "backend/tests/*" "backend/storage/logs/*" "backend/.phpunit.result.cache" "**/node_modules/*" "frontend/*" ".git/*" ".github/*" "build-production.js" "launcher.c" "extractor.c" "resources.rc"
+
+      - name: Compile Standalone Application Executable
+        run: |
+          x86_64-w64-mingw32-windres resources.rc -O coff -o resources.res
+          x86_64-w64-mingw32-gcc -O2 extractor.c resources.res -o TrustCareApp.exe -mwindows
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: trustcare-workshop-system.zip
+          files: |
+            TrustCareApp.exe
+            trustcare-workshop-system.zip
           draft: false
           prerelease: false
         env:

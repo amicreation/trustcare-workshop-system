@@ -1,0 +1,10 @@
+npm run dev
+
+
+run install-all
+
+npm run build --prefix frontend
+
+
+
+http://localhost:5173/invoices

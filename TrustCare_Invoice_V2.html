@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust Care Workshop - Invoice V2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+body{margin:0;background:#dcdcdc;font-family:Arial,sans-serif}
+.toolbar{background:#111;padding:10px;text-align:center;position:sticky;top:0;z-index:99}
+.toolbar button{background:#c91921;color:#fff;border:none;padding:10px 15px;margin:4px;border-radius:4px;cursor:pointer}
+.wrapper{padding:20px;overflow:auto}
+.invoice{width:210mm;min-height:297mm;background:#fff;margin:auto;padding:12mm;box-sizing:border-box}
+.header{display:flex;justify-content:space-between;border-bottom:3px solid #c91921;padding-bottom:10px}
+.logoarea{display:flex;gap:15px;align-items:center}
+.logoarea img{width:100px;height:100px;object-fit:contain;border:1px solid #ddd}
+.company h1{margin:0;color:#c91921}
+.company p{margin:2px 0}
+.row{display:flex;gap:20px;margin-top:15px}
+.col{flex:1}
+label{font-weight:bold}
+input,textarea,select{width:100%;padding:6px;box-sizing:border-box}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #bbb;padding:6px}
+th{background:#111;color:#fff}
+.summary{width:380px;margin-left:auto;margin-top:15px}
+.summary td{padding:8px}
+.sign{display:flex;justify-content:space-between;margin-top:50px}
+.sig{width:220px;border-top:1px solid #000;text-align:center;padding-top:5px}
+.actionbtn{background:#c91921;color:#fff;border:none;padding:5px 8px}
+.previewMode input,.previewMode textarea,.previewMode select{border:none;pointer-events:none;background:transparent}
+.previewMode .noprint{display:none!important}
+@media print{
+.toolbar,.noprint{display:none!important}
+body{background:white}
+.wrapper{padding:0}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+<button onclick="togglePreview()">Preview</button>
+<button onclick="window.print()">Print</button>
+<button onclick="exportPDF()">Export PDF</button>
+<button onclick="saveInvoice()">Save Invoice</button>
+<input type="file" id="logoUpload">
+</div>
+
+<div class="wrapper">
+<div class="invoice" id="invoice">
+
+<div class="header">
+<div class="logoarea">
+<img id="logo" alt="logo">
+<div class="company">
+<h1>TRUST CARE WORKSHOP</h1>
+<p><b>Driven by Trust, Powered by Skill</b></p>
+<p>Near Vaishnodevi Circle, Ahmedabad</p>
+<p>8200695660 | 9512660711</p>
+</div>
+</div>
+
+<div style="width:280px">
+<label>Invoice No</label>
+<input id="invoiceNo" value="TCW-0001">
+<label>Date</label>
+<input type="date" id="invoiceDate">
+</div>
+</div>
+
+<div class="row">
+<div class="col">
+<h3>Bill To</h3>
+<input placeholder="Customer Name">
+<input placeholder="Mobile Number">
+<textarea placeholder="Address"></textarea>
+</div>
+
+<div class="col">
+<h3>Vehicle Details</h3>
+<input id="vehicleNo" placeholder="Vehicle Number">
+<input placeholder="Vehicle Make">
+<input placeholder="Vehicle Model">
+<input placeholder="KM Reading">
+</div>
+</div>
+
+<h3>Services & Parts</h3>
+
+<table id="tbl">
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Tax %</th>
+<th>Amount</th>
+<th class="noprint">Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="noprint" style="margin-top:10px">
+<button onclick="addRow()" class="actionbtn">+ Add Service</button>
+</div>
+
+<div class="summary">
+<table>
+<tr><td>Parts Total</td><td id="partsTotal">0.00</td></tr>
+<tr><td>Labour Total</td><td id="labourTotal">0.00</td></tr>
+<tr><td>GST Total</td><td id="gstTotal">0.00</td></tr>
+<tr><td>Discount</td><td><input id="discount" value="" oninput="calc()"></td></tr>
+<tr><td><b>Grand Total</b></td><td><b id="grandTotal">0.00</b></td></tr>
+</table>
+</div>
+
+<div style="margin-top:30px">
+<b>Terms & Conditions</b><br>
+Payment required upon vehicle collection. Parts warranty subject to manufacturer terms. Labour warranty applicable only to covered repairs.
+</div>
+
+<div class="sign">
+<div class="sig">Customer Signature</div>
+<div class="sig">Authorized Signature</div>
+</div>
+
+</div>
+</div>
+
+<datalist id="services">
+<option value="Engine Oil Change">
+<option value="Oil Filter">
+<option value="Air Filter">
+<option value="Coolant">
+<option value="Brake Pad">
+<option value="Brake Oil">
+<option value="Wheel Alignment">
+<option value="Wheel Balancing">
+<option value="AC Service">
+<option value="Washing">
+<option value="Denting">
+<option value="Painting">
+<option value="Labour Charges">
+</datalist>
+
+<script>
+function addRow(){
+let tr=document.createElement('tr');
+tr.innerHTML=`
+<td>
+<select onchange="calc()">
+<option>Part</option>
+<option>Labour</option>
+<option>Service</option>
+</select>
+</td>
+<td><input list="services" placeholder="Description"></td>
+<td><input type="number" value="1" oninput="calc()"></td>
+<td><input type="number" value="" oninput="calc()"></td>
+<td><input type="number" value="0" oninput="calc()"></td>
+<td class="amt">0.00</td>
+<td class="noprint"><button onclick="this.closest('tr').remove();calc()">X</button></td>`;
+document.querySelector("#tbl tbody").appendChild(tr);
+}
+
+function calc(){
+let parts=0,labour=0,gst=0;
+document.querySelectorAll("#tbl tbody tr").forEach(r=>{
+let type=r.cells[0].querySelector("select").value;
+let qty=parseFloat(r.cells[2].querySelector("input").value)||0;
+let rate=parseFloat(r.cells[3].querySelector("input").value)||0;
+let tax=parseFloat(r.cells[4].querySelector("input").value)||0;
+let base=qty*rate;
+let taxv=base*tax/100;
+r.querySelector(".amt").innerText=(base+taxv).toFixed(2);
+if(type==="Part") parts+=base;
+if(type==="Labour" || type==="Service") labour+=base;
+gst+=taxv;
+});
+let disc=parseFloat(document.getElementById("discount").value)||0;
+document.getElementById("partsTotal").innerText=parts.toFixed(2);
+document.getElementById("labourTotal").innerText=labour.toFixed(2);
+document.getElementById("gstTotal").innerText=gst.toFixed(2);
+document.getElementById("grandTotal").innerText=(parts+labour+gst-disc).toFixed(2);
+}
+
+function togglePreview(){
+document.getElementById("invoice").classList.toggle("previewMode");
+}
+
+function exportPDF(){
+let inv=document.getElementById("invoiceNo").value || "Invoice";
+let veh=document.getElementById("vehicleNo").value || "Vehicle";
+html2pdf().set({
+filename: inv+"_"+veh+".pdf",
+jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+}).from(document.getElementById("invoice")).save();
+}
+
+function saveInvoice(){
+let data={
+invoiceNo:document.getElementById("invoiceNo").value,
+vehicleNo:document.getElementById("vehicleNo").value,
+saved:new Date().toISOString()
+};
+localStorage.setItem(data.invoiceNo,JSON.stringify(data));
+alert("Invoice saved locally.");
+}
+
+document.getElementById("logoUpload").addEventListener("change",e=>{
+let f=e.target.files[0];
+if(!f)return;
+let r=new FileReader();
+r.onload=x=>{
+document.getElementById("logo").src=x.target.result;
+localStorage.setItem("tcw_logo",x.target.result);
+};
+r.readAsDataURL(f);
+});
+
+let storedLogo=localStorage.getItem("tcw_logo");
+if(storedLogo) document.getElementById("logo").src=storedLogo;
+
+addRow();
+</script>
+</body>
+</html>

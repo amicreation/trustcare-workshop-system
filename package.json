@@ -1,0 +1,15 @@
+{
+  "name": "trustcare-workshop-management-system",
+  "version": "1.0.0",
+  "description": "Full Stack Workshop Management System for Trust Care",
+  "scripts": {
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend --legacy-peer-deps",
+    "build": "node build-production.js",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "bin\\php.bat backend/artisan serve",
+    "frontend": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #0f172a; /* Slate 900 */
+    color: #f8fafc; /* Slate 50 */
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Custom styles for A4 Invoice preview */
+.invoice-container {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 8mm;
+  margin: 0 auto;
+  background: white;
+  color: #1e293b; /* Slate 800 */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  font-size: 11.5px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Metadata table border styling matching the user's attachment */
+.meta-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #000;
+  margin-top: 10px;
+  background: #fff;
+}
+
+.meta-table td {
+  border: 1px solid #000;
+  padding: 4px 8px;
+  vertical-align: middle;
+  font-size: 11px;
+}
+
+.meta-table textarea,
+.meta-table input,
+.meta-table select {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 11px;
+  color: #000;
+  padding: 1px 0;
+}
+
+.meta-table input::placeholder,
+.meta-table textarea::placeholder {
+  color: #94a3b8;
+}
+
+.meta-table textarea {
+  resize: none;
+}
+
+.field-label {
+  font-weight: 700;
+  color: #000;
+  white-space: nowrap;
+}
+
+/* Services and Parts Table styling */
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #000;
+  margin-top: 15px;
+}
+
+.services-table th {
+  border: 1.5px solid #000;
+  background: #000;
+  color: #fff;
+  font-weight: 700;
+  text-align: left;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.services-table td {
+  border: 1px solid #000;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #000;
+}
+
+.services-table input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-size: 11px;
+  color: #000;
+}
+
+/* Print CSS overrides */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .noprint, 
+  .no-print,
+  button,
+  .btn,
+  .type-pills,
+  .action-cell,
+  header,
+  nav,
+  aside,
+  .sidebar,
+  .floating-toolbar {
+    display: none !important;
+  }
+
+  .invoice-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 8mm !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+    overflow: hidden !important;
+  }
+
+  .meta-table {
+    border: 1.5px solid #000 !important;
+  }
+
+  .meta-table td {
+    border: 1px solid #000 !important;
+  }
+
+  .services-table {
+    border: 1.5px solid #000 !important;
+  }
+
+  .services-table th {
+    background: #000 !important;
+    color: #fff !important;
+    border: 1.5px solid #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .services-table td {
+    border: 1px solid #000 !important;
+  }
+
+  /* Form elements printing styling */
+  input, select, textarea {
+    border: none !important;
+    background: transparent !important;
+    outline: none !important;
+    padding: 0 !important;
+    color: black !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Ensure placeholder text is hidden when printing blank */
+  input::placeholder, textarea::placeholder {
+    color: transparent !important;
+  }
+}
+
+/* Custom styling for inline classification switch */
+.type-pill {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #cbd5e1;
+}
+
+.type-pill.active {
+  background-color: #ef4444; /* red-500 */
+  color: white;
+  border-color: #ef4444;
+}
+
+.type-pills {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}

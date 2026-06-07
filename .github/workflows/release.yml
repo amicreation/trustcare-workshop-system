@@ -43,9 +43,18 @@ jobs:
           cp .env.example .env
           php artisan key:generate --force
 
+      - name: Install MinGW Compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64
+
+      - name: Compile Launcher Executable
+        run: |
+          x86_64-w64-mingw32-gcc -O2 launcher.c -o TrustCare.exe -mwindows
+
       - name: Package Release ZIP
         run: |
-          zip -r trustcare-workshop-system.zip backend bin run.bat -x "backend/node_modules/*" "backend/tests/*" "backend/storage/logs/*" "backend/.phpunit.result.cache" "**/node_modules/*" "frontend/*" ".git/*" ".github/*" "build-production.js"
+          zip -r trustcare-workshop-system.zip TrustCare.exe backend bin run.bat -x "backend/node_modules/*" "backend/tests/*" "backend/storage/logs/*" "backend/.phpunit.result.cache" "**/node_modules/*" "frontend/*" ".git/*" ".github/*" "build-production.js" "launcher.c"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

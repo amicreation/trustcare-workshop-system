@@ -71,6 +71,26 @@ const fetchDashboardData = async () => {
   }
 }
 
+const parseComplaints = (complaints: any) => {
+  if (!complaints) return ''
+  try {
+    if (Array.isArray(complaints)) {
+      return complaints.join(', ')
+    }
+    if (typeof complaints === 'string') {
+      // Check if it looks like a JSON array
+      if (complaints.trim().startsWith('[')) {
+        const parsed = JSON.parse(complaints)
+        return Array.isArray(parsed) ? parsed.join(', ') : complaints
+      }
+      return complaints
+    }
+    return String(complaints)
+  } catch (e) {
+    return complaints
+  }
+}
+
 onMounted(() => {
   fetchDashboardData()
 })
@@ -345,7 +365,7 @@ const formatCurrency = (val: number) => {
                   }">{{ job.status }}</span>
                 </td>
                 <td class="text-truncate" style="max-width: 250px;">
-                  {{ Array.isArray(JSON.parse(job.complaints || '[]')) ? JSON.parse(job.complaints || '[]').join(', ') : job.complaints }}
+                  {{ parseComplaints(job.complaints) }}
                 </td>
                 <td class="text-end pe-4">
                   <button class="btn btn-sm btn-dark btn-circle" @click="router.push(`/jobcards?id=${job.id}`)" title="View Job Card">

@@ -15,12 +15,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wchar_t tempPath[MAX_PATH];
     GetTempPathW(MAX_PATH, tempPath);
     
-    // 3. Create a unique temporary ZIP file path (Unicode)
+    // 3. Create a unique temporary ZIP file path ending in .zip to satisfy PowerShell
     wchar_t zipPath[MAX_PATH];
-    if (GetTempFileNameW(tempPath, L"TC_", 0, zipPath) == 0) {
-        MessageBoxW(NULL, L"Failed to create a unique temporary file path.", L"Error", MB_OK | MB_ICONERROR);
-        return 1;
-    }
+    swprintf(zipPath, MAX_PATH, L"%lsTC_Temp_%lu.zip", tempPath, GetTickCount());
     
     // 4. Create a unique destination directory path using dynamic tick count
     wchar_t destPath[MAX_PATH];
@@ -30,14 +27,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HRSRC hRes = FindResourceW(NULL, L"APP_ZIP", (LPCWSTR)RT_RCDATA);
     if (!hRes) {
         MessageBoxW(NULL, L"Failed to find internal resources.", L"Error", MB_OK | MB_ICONERROR);
-        DeleteFileW(zipPath);
         return 1;
     }
     
     HGLOBAL hGlobal = LoadResource(NULL, hRes);
     if (!hGlobal) {
         MessageBoxW(NULL, L"Failed to load internal resources.", L"Error", MB_OK | MB_ICONERROR);
-        DeleteFileW(zipPath);
         return 1;
     }
     
@@ -45,7 +40,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     DWORD size = SizeofResource(NULL, hRes);
     if (!pData || size == 0) {
         MessageBoxW(NULL, L"Internal resources are empty.", L"Error", MB_OK | MB_ICONERROR);
-        DeleteFileW(zipPath);
         return 1;
     }
 
@@ -55,7 +49,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         wchar_t errMsg[512];
         swprintf(errMsg, 512, L"Failed to write temporary file.\nPath: %ls\nError code: %d", zipPath, GetLastError());
         MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
-        DeleteFileW(zipPath);
         return 1;
     }
     fwrite(pData, 1, size, f);

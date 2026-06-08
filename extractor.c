@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     // 4. Create a unique destination directory path using dynamic tick count
     wchar_t destPath[MAX_PATH];
-    swprintf(destPath, MAX_PATH, L"%sTrustCareApp_%lu", tempPath, GetTickCount());
+    swprintf(destPath, MAX_PATH, L"%lsTrustCareApp_%lu", tempPath, GetTickCount());
 
     // 5. Load the embedded ZIP resource
     HRSRC hRes = FindResourceW(NULL, L"APP_ZIP", (LPCWSTR)RT_RCDATA);
@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     FILE* f = _wfopen(zipPath, L"wb");
     if (!f) {
         wchar_t errMsg[512];
-        swprintf(errMsg, 512, L"Failed to write temporary file.\nPath: %s\nError code: %d", zipPath, GetLastError());
+        swprintf(errMsg, 512, L"Failed to write temporary file.\nPath: %ls\nError code: %d", zipPath, GetLastError());
         MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
         DeleteFileW(zipPath);
         return 1;
@@ -63,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // 7. Create the destination folder and extract using PowerShell (Unicode execution)
     wchar_t psCmd[1536];
-    swprintf(psCmd, 1536, L"-Command \"if (!(Test-Path '%s')) { New-Item -ItemType Directory -Path '%s' }; Expand-Archive -Path '%s' -DestinationPath '%s' -Force\"", destPath, destPath, zipPath, destPath);
+    swprintf(psCmd, 1536, L"-Command \"if (!(Test-Path '%ls')) { New-Item -ItemType Directory -Path '%ls' }; Expand-Archive -Path '%ls' -DestinationPath '%ls' -Force\"", destPath, destPath, zipPath, destPath);
 
     SHELLEXECUTEINFOW sei;
     ZeroMemory(&sei, sizeof(sei));
@@ -88,12 +88,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // 8. Run the extracted launcher TrustCare.exe
     wchar_t exePath[MAX_PATH];
-    swprintf(exePath, MAX_PATH, L"%s\\TrustCare.exe", destPath);
+    swprintf(exePath, MAX_PATH, L"%ls\\TrustCare.exe", destPath);
 
     ZeroMemory(&sei, sizeof(sei));
     sei.cbSize = sizeof(sei);
     sei.lpVerb = L"open";
     sei.lpFile = exePath;
+    sei.lpDirectory = destPath; // Set the working directory to the extracted folder!
     sei.nShow = SW_SHOWNORMAL;
 
     if (!ShellExecuteExW(&sei)) {

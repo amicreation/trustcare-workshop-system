@@ -63,6 +63,8 @@ const tempItem = ref({
   tax_percent: 18
 })
 
+const templateTimeout = (fn: Function, delay: number) => setTimeout(fn, delay)
+
 // Auto suggest state
 const showSuggestions = ref(false)
 const suggestions = computed(() => {
@@ -755,14 +757,14 @@ const printWindow = () => {
                     class="form-control form-control-sm" 
                     placeholder="e.g. Engine Oil, Front brake pads..." 
                     @focus="showSuggestions = true"
-                    @blur="setTimeout(() => showSuggestions = false, 200)"
+                    @blur="templateTimeout(() => showSuggestions = false, 200)"
                   />
                   <!-- Suggestion list -->
-                  <div v-if="showSuggestions && suggestions.length > 0" class="suggestions-dropdown position-absolute w-100 bg-glass shadow-sm z-3 mt-1 small rounded">
+                  <div v-if="showSuggestions && suggestions.length > 0" class="suggestions-dropdown position-absolute w-100 mt-1 small">
                     <div 
                       v-for="s in suggestions" 
                       :key="s.id" 
-                      class="suggestion-row p-2 cursor-pointer border-bottom font-monospace"
+                      class="suggestion-row font-monospace"
                       @mousedown="selectSuggestion(s)"
                     >
                       {{ s.sku }} - {{ s.name }} (₹{{ s.selling_price }})

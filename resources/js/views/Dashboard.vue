@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
+import NewJobCardModal from '../components/NewJobCardModal.vue'
+import NewInvoiceModal from '../components/NewInvoiceModal.vue'
 import { 
   Car, CheckSquare, Package, DollarSign, TrendingUp, 
   PlusCircle, FileText, ClipboardList, ShieldAlert, ChevronRight, Activity
@@ -10,6 +12,20 @@ import {
 
 const authStore = useAuthStore()
 const router = useRouter()
+
+const showNewJobModal = ref(false)
+const showNewInvoiceModal = ref(false)
+
+const handleInvoiceSaved = async (invoiceId: number) => {
+  fetchDashboardData()
+  // Generate and open PDF automatically for the printed bill
+  try {
+    const res = await axios.get(`/api/invoices/${invoiceId}/pdf`)
+    window.open(res.data.pdf_url, '_blank')
+  } catch (err) {
+    console.error('Failed to generate PDF', err)
+  }
+}
 
 const loading = ref(true)
 const stats = ref({
@@ -111,13 +127,13 @@ const formatCurrency = (val: number) => {
     <!-- Quick Action Ribbon (For Authorized Roles) -->
     <div class="row g-3 mb-4" v-if="authStore.isAdmin || authStore.isAdvisor">
       <div class="col-12 col-md-3">
-        <button class="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm hover-lift" @click="router.push('/jobcards')">
+        <button class="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm hover-lift" @click="showNewJobModal = true">
           <PlusCircle :size="18" />
           <span>New Job Card</span>
         </button>
       </div>
       <div class="col-12 col-md-3">
-        <button class="btn btn-dark w-100 py-3 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm hover-lift" @click="router.push('/invoices')">
+        <button class="btn btn-dark w-100 py-3 d-flex align-items-center justify-content-center gap-2 rounded-3 shadow-sm hover-lift" @click="showNewInvoiceModal = true">
           <FileText :size="18" />
           <span>Generate Invoice</span>
         </button>
@@ -342,6 +358,18 @@ const formatCurrency = (val: number) => {
         </div>
       </div>
     </div>
+
+    <!-- Action Modals -->
+    <NewJobCardModal 
+      :show="showNewJobModal" 
+      @close="showNewJobModal = false" 
+      @saved="fetchDashboardData" 
+    />
+    <NewInvoiceModal 
+      :show="showNewInvoiceModal" 
+      @close="showNewInvoiceModal = false" 
+      @saved="handleInvoiceSaved" 
+    />
   </div>
 </template>
 

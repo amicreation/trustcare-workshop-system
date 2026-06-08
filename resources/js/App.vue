@@ -23,9 +23,11 @@ const toggleTheme = () => {
   darkMode.value = !darkMode.value
   if (darkMode.value) {
     document.documentElement.classList.add('dark')
+    document.documentElement.setAttribute('data-bs-theme', 'dark')
     localStorage.setItem('theme', 'dark')
   } else {
     document.documentElement.classList.remove('dark')
+    document.documentElement.setAttribute('data-bs-theme', 'light')
     localStorage.setItem('theme', 'light')
   }
 }
@@ -34,8 +36,10 @@ const toggleTheme = () => {
 onMounted(() => {
   if (darkMode.value) {
     document.documentElement.classList.add('dark')
+    document.documentElement.setAttribute('data-bs-theme', 'dark')
   } else {
     document.documentElement.classList.remove('dark')
+    document.documentElement.setAttribute('data-bs-theme', 'light')
   }
   
   if (authStore.isAuthenticated) {
@@ -184,8 +188,10 @@ body {
 /* Light Theme */
 .light-theme {
   --bg-body: #f8f9fa;
+  --bg-body-rgb: 248, 249, 250;
   --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
+  --bg-card-rgb: 255, 255, 255;
   --text-main: #111111;
   --text-muted: #6c757d;
   --border-color: #dee2e6;
@@ -197,8 +203,10 @@ body {
 /* Dark Theme */
 .dark-theme {
   --bg-body: #0a0a0a;
+  --bg-body-rgb: 10, 10, 10;
   --bg-sidebar: #121212;
   --bg-card: #1e1e1e;
+  --bg-card-rgb: 30, 30, 30;
   --text-main: #f8f9fa;
   --text-muted: #adb5bd;
   --border-color: #2c2c2c;
@@ -441,15 +449,47 @@ body {
   background-color: rgba(0,0,0,0.02) !important;
 }
 
+/* Fix Bootstrap background utility classes in dark mode */
+.bg-body {
+  background-color: var(--bg-body) !important;
+}
+.bg-body.bg-opacity-50 {
+  background-color: rgba(var(--bg-body-rgb), 0.5) !important;
+}
+.bg-body.bg-opacity-25 {
+  background-color: rgba(var(--bg-body-rgb), 0.25) !important;
+}
+.bg-card {
+  background-color: var(--bg-card) !important;
+}
+.bg-glass {
+  background-color: var(--bg-card) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* Global border overrides for theme cohesion */
+.border, .border-top, .border-bottom, .border-start, .border-end, .border-secondary {
+  border-color: var(--border-color) !important;
+}
+
 .table {
   color: var(--text-main) !important;
   border-color: var(--border-color) !important;
+  background-color: transparent !important;
+}
+
+.table tr, .table td, .table th {
+  background-color: transparent !important;
 }
 
 .table th {
   background-color: rgba(0,0,0,0.04) !important;
   border-bottom-color: var(--border-color) !important;
   font-weight: 700;
+}
+
+.dark-theme .table th {
+  background-color: rgba(255,255,255,0.04) !important;
 }
 
 .table td {
@@ -481,6 +521,35 @@ body {
 .light-theme textarea::placeholder {
   color: var(--text-muted) !important;
   opacity: 0.6 !important;
+}
+
+/* Global Autocomplete Suggestion Dropdowns */
+.suggestions-dropdown {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1050;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.3);
+}
+
+.suggestion-row {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s, color 0.15s;
+  text-align: left;
+}
+
+.suggestion-row:last-child {
+  border-bottom: none;
+}
+
+.suggestion-row:hover, .suggestion-row.active {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
 }
 
 /* Print CSS overrides */

@@ -1,22 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trust Care Workshop Management System - Complete Full Stack Garage ERP for Customer Databases, Job Cards, Estimates, and Invoice PDF Generation.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Trust Care Workshop Management System - Complete Full Stack Garage ERP for Customer Databases, Job Cards, Estimates, and Invoice PDF Generation." />
     <title>Trust Care Workshop Management System</title>
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/index-EgJ5ivYe.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/createLucideIcon-DV9YDcsy.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-2cqSMk64.css">
-  </head>
-  <body>
+    @vite(['resources/css/app.css', 'resources/js/main.ts'])
+</head>
+<body class="bg-light">
     <div id="root"></div>
     <!-- html2pdf library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5xS50Us5IPGeLYvhGCA5+/X35jZO6K/9OcRJDR9Lk52xK69GF540w35wUIOQT1gPQ8S28cVPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  </body>
+</body>
 </html>

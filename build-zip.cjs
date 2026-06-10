@@ -11,18 +11,26 @@ try {
   process.exit(1);
 }
 
-console.log('=== Step 2: Checking Composer Vendor Directory ===');
-if (!fs.existsSync(path.join(__dirname, 'vendor'))) {
-  console.log('"vendor" directory not found. Running "composer install" to pull dependencies...');
+console.log('=== Step 2: Optimizing Composer Dependencies for Production (No Dev) ===');
+let hasComposer = false;
+try {
+  execSync('composer --version', { stdio: 'ignore' });
+  hasComposer = true;
+} catch (e) {
+  console.log('Composer command not found. Zipping current vendor directory as-is...');
+}
+
+if (hasComposer) {
+  console.log('Pruning dev dependencies to minimize production inodes...');
   try {
-    execSync('composer install', { stdio: 'inherit' });
-    console.log('Composer dependencies installed successfully!\n');
+    execSync('composer install --no-dev --optimize-autoloader', { stdio: 'inherit' });
+    console.log('Composer pruned successfully!\n');
   } catch (error) {
-    console.error('Composer install failed. Please make sure composer is installed and run it manually.\n');
-    process.exit(1);
+    console.warn('Warning: Composer prune failed. Proceeding with existing vendor files.\n');
   }
-} else {
-  console.log('"vendor" directory is present.');
+} else if (!fs.existsSync(path.join(__dirname, 'vendor'))) {
+  console.error('Error: "vendor" directory not found and Composer is not installed. Cannot package application.\n');
+  process.exit(1);
 }
 
 console.log('=== Step 3: Preparing Release Package ===');
@@ -100,5 +108,14 @@ try {
   console.log('5. Trigger database migrations.');
 } catch (error) {
   console.error('Packaging failed:', error.message);
-  process.exit(1);
+} finally {
+  if (hasComposer) {
+    console.log('\nRestoring local require-dev dependencies...');
+    try {
+      execSync('composer install', { stdio: 'inherit' });
+      console.log('Local dev dependencies restored successfully!\n');
+    } catch (e) {
+      console.warn('Warning: Could not restore local dev dependencies automatically. Run "composer install" manually.');
+    }
+  }
 }

@@ -15,6 +15,15 @@ Route::get('/deploy/migrate/{secret}', function ($secret) {
     try {
         Artisan::call('migrate', ['--force' => true]);
         $output = Artisan::output();
+
+        try {
+            Artisan::call('storage:link');
+            $output .= "\n" . Artisan::output();
+        } catch (\Exception $e) {
+            // Ignore if link already exists or fails
+            $output .= "\nStorage link step: " . $e->getMessage();
+        }
+
         return "<pre>Migrations ran successfully:\n\n" . e($output) . "</pre>";
     } catch (\Exception $e) {
         return response("<pre>Error running migrations:\n\n" . e($e->getMessage()) . "</pre>", 500);

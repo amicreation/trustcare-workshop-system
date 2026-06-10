@@ -5,29 +5,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/deploy/clear-cache', function () {
-    try {
-        Artisan::call('config:clear');
-        Artisan::call('cache:clear');
-        Artisan::call('view:clear');
-        Artisan::call('route:clear');
-        return "<pre>Caches cleared successfully:\n\n" . e(Artisan::output()) . "</pre>";
-    } catch (\Exception $e) {
-        return "Error clearing cache: " . $e->getMessage();
-    }
-});
-
-Route::get('/deploy/debug-env', function () {
-    return response()->json([
-        'APP_ENV' => env('APP_ENV'),
-        'DEPLOY_SECRET_EXISTS' => !empty(env('DEPLOY_SECRET')),
-        'DEPLOY_SECRET_VAL' => env('DEPLOY_SECRET'),
-        'DB_CONNECTION' => env('DB_CONNECTION'),
-        'env_file_exists' => file_exists(base_path('.env')),
-        'env_file_readable' => is_readable(base_path('.env')),
-    ]);
-});
-
 Route::get('/deploy/migrate/{secret}', function ($secret) {
     $expectedSecret = env('DEPLOY_SECRET');
     

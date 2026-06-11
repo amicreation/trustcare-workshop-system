@@ -13,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue'),
-    meta: { guest: true }
+    meta: { requiresAuth: true, roles: ['admin'] }
   },
   {
     path: '/dashboard',

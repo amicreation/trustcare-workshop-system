@@ -29,7 +29,7 @@ const handleRegister = async () => {
   success.value = ''
 
   try {
-    const response = await axios.post('/api/auth/register', {
+    await axios.post('/api/auth/register', {
       name: name.value,
       username: username.value,
       email: email.value || null,
@@ -37,19 +37,18 @@ const handleRegister = async () => {
       role: role.value
     })
     
-    success.value = 'Staff registration successful! Redirecting...'
+    success.value = 'Staff registration successful! The new account is active.'
     
-    // Automatically log user in
-    const { token, user } = response.data
-    authStore.token = token
-    authStore.user = user
-    localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(user))
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    // Reset form fields so admin can add another user
+    name.value = ''
+    username.value = ''
+    email.value = ''
+    password.value = ''
+    role.value = 'advisor'
 
     setTimeout(() => {
-      router.push('/dashboard')
-    }, 1500)
+      success.value = ''
+    }, 4000)
     
   } catch (err: any) {
     console.error(err)
@@ -165,8 +164,7 @@ const handleRegister = async () => {
       </button>
 
       <div class="text-center small">
-        <span class="text-muted">Already registered?</span>
-        <router-link to="/login" class="text-danger fw-bold ms-1 text-decoration-none">Sign In</router-link>
+        <router-link to="/settings" class="text-danger fw-bold text-decoration-none">← Go to Configurations</router-link>
       </div>
     </form>
   </div>

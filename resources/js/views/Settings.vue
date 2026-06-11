@@ -5,7 +5,8 @@ import { useSettingsStore } from '../stores/settings'
 import { useAuthStore } from '../stores/auth'
 import { 
   Settings, Info, FileText, Image, 
-  Check, Save, Sparkles, AlertTriangle
+  Check, Save, Sparkles, AlertTriangle,
+  User, KeyRound
 } from 'lucide-vue-next'
 
 const settingsStore = useSettingsStore()
@@ -78,8 +79,57 @@ const saveSettings = async () => {
   loading.value = false
 }
 
+// Password change state
+const passwordForm = ref({
+  current_password: '',
+  new_password: '',
+  confirm_password: ''
+})
+const passwordLoading = ref(false)
+const passwordSuccess = ref(false)
+const passwordError = ref('')
+
+const changePassword = async () => {
+  if (passwordForm.value.new_password !== passwordForm.value.confirm_password) {
+    passwordError.value = 'New password and confirmation do not match.'
+    return
+  }
+  passwordLoading.value = true
+  passwordSuccess.value = false
+  passwordError.value = ''
+  try {
+    await axios.post('/api/auth/change-password', {
+      current_password: passwordForm.value.current_password,
+      new_password: passwordForm.value.new_password
+    })
+    passwordSuccess.value = true
+    passwordForm.value = {
+      current_password: '',
+      new_password: '',
+      confirm_password: ''
+    }
+    setTimeout(() => passwordSuccess.value = false, 3000)
+  } catch (err: any) {
+    passwordError.value = err.response?.data?.error || 'Failed to update password. Verify your current password.'
+  } finally {
+    passwordLoading.value = false
+  }
+}
+
+// Users list state
+const users = ref<any[]>([])
+const fetchUsers = async () => {
+  try {
+    const res = await axios.get('/api/settings/users')
+    users.value = res.data
+  } catch (err) {
+    console.error('Failed to load system users', err)
+  }
+}
+
 onMounted(() => {
   loadSettings()
+  fetchUsers()
 })
 </script>
 
@@ -199,6 +249,97 @@ onMounted(() => {
               <span class="small text-muted text-xxs block mt-1">Recommended: PNG / JPG file under 500kb. Matches print PDF.</span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="row g-4 mt-2">
+      <!-- User Accounts List -->
+      <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm bg-glass h-100 animate-zoom-in">
+          <div class="card-header border-0 bg-transparent pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold m-0 d-flex align-items-center gap-2">
+              <User :size="18" class="text-danger" />
+              <span>User Accounts & Staff Access</span>
+            </h5>
+            <router-link to="/register" class="btn btn-sm btn-danger px-3 py-1.5 fw-bold text-white rounded-3" style="background-color: #d71920; border-color: #d71920;">
+              + Register Staff
+            </router-link>
+          </div>
+          <div class="card-body px-4 py-3">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr class="text-uppercase small text-muted">
+                    <th class="ps-3">Full Name</th>
+                    <th>Username</th>
+                    <th>Email Address</th>
+                    <th>System Role</th>
+                    <th class="pe-3">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="u in users" :key="u.id">
+                    <td class="ps-3 fw-bold">{{ u.name }}</td>
+                    <td class="font-monospace">{{ u.username }}</td>
+                    <td class="text-muted">{{ u.email || 'N/A' }}</td>
+                    <td>
+                      <span class="badge rounded px-2.5 py-1 text-uppercase" :class="{
+                        'bg-danger bg-opacity-10 text-danger': u.role === 'admin',
+                        'bg-warning bg-opacity-10 text-warning': u.role === 'manager',
+                        'bg-info bg-opacity-10 text-info': u.role === 'advisor'
+                      }">
+                        {{ u.role === 'admin' ? 'Admin' : u.role === 'manager' ? 'Manager' : 'Advisor' }}
+                      </span>
+                    </td>
+                    <td class="text-muted small pe-3">{{ new Date(u.created_at).toLocaleDateString() }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Change Section -->
+      <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm bg-glass h-100 animate-zoom-in">
+          <div class="card-header border-0 bg-transparent pt-4 px-4 pb-0">
+            <h5 class="fw-bold m-0 d-flex align-items-center gap-2">
+              <KeyRound :size="18" class="text-danger" />
+              <span>Change Password</span>
+            </h5>
+          </div>
+          <form @submit.prevent="changePassword">
+            <div class="card-body px-4 py-3">
+              <div v-if="passwordSuccess" class="alert alert-success py-2 px-3 small rounded-3 mb-3">
+                Password updated successfully!
+              </div>
+              <div v-if="passwordError" class="alert alert-danger py-2 px-3 small rounded-3 mb-3">
+                {{ passwordError }}
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted uppercase">Current Password</label>
+                <input type="password" v-model="passwordForm.current_password" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted uppercase">New Password</label>
+                <input type="password" v-model="passwordForm.new_password" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted uppercase">Confirm Password</label>
+                <input type="password" v-model="passwordForm.confirm_password" class="form-control" required />
+              </div>
+            </div>
+            <div class="card-footer border-0 bg-transparent px-4 pb-4 pt-0 d-flex justify-content-end">
+              <button type="submit" class="btn btn-outline-danger btn-sm w-100 py-2 fw-bold" :disabled="passwordLoading">
+                <span v-if="passwordLoading" class="spinner-border spinner-border-sm me-2"></span>
+                <span>Update Password</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

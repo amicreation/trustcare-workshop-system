@@ -12,6 +12,10 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized. Only administrators can register new users.'], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users|max:255',
@@ -28,14 +32,43 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        ActivityLogger::log('User Registered', "User {$user->username} registered as {$user->role}.");
+        ActivityLogger::log('User Registered', "User {$request->user()->username} registered a new user {$user->username} as {$user->role}.");
 
         return response()->json([
-            'token' => $token,
+            'message' => 'User registered successfully.',
             'user' => $user,
         ], 201);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['error' => 'Current password does not match.'], 400);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        ActivityLogger::log('Password Changed', "User {$user->username} changed their password.");
+
+        return response()->json(['message' => 'Password changed successfully.']);
+    }
+
+    public function getUsers(Request $request)
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized. Only administrators can view user list.'], 403);
+        }
+
+        $users = User::orderBy('created_at', 'desc')->get();
+        return response()->json($users);
     }
 
     public function login(Request $request)

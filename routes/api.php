@@ -14,14 +14,16 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 
 // Public Auth Routes
-Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 // Protected REST API Routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Auth Profile
+    // Auth Profile & Management
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::get('/settings/users', [AuthController::class, 'getUsers']);
 
     // Customers CRUD & Helpers
     Route::get('/customers/lookup/{mobile}', [CustomerController::class, 'lookup']);

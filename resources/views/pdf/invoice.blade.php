@@ -173,7 +173,7 @@
     <table class="meta-table">
         <tr>
             <td style="width: 60%;">
-                <span class="field-label">Name:</span> {{ $customer->name }}<br>
+                <span class="field-label">Name:</span> {{ ucwords(strtolower($customer->name)) }}<br>
                 <span class="field-label">Contact:</span> {{ $customer->mobile }} @if($customer->alternate_mobile) / {{ $customer->alternate_mobile }} @endif<br>
                 <span class="field-label">Email:</span> {{ $customer->email ?? 'N/A' }}<br>
                 <span class="field-label">Address:</span> {{ $customer->address_1 }} {{ $customer->address_2 }}

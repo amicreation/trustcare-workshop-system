@@ -273,7 +273,10 @@ const formatCurrency = (val: number) => {
                   fill="none"
                   stroke="#d71920"
                   stroke-width="3"
-                  :points="svgPoints" />
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  :points="svgPoints"
+                  filter="drop-shadow(0px 3px 6px rgba(215, 25, 32, 0.4))" />
               </svg>
             </div>
             
@@ -353,22 +356,22 @@ const formatCurrency = (val: number) => {
             </thead>
             <tbody>
               <tr v-for="job in activeJobCards" :key="job.id">
-                <td class="ps-4 fw-bold text-danger">{{ job.job_card_no }}</td>
-                <td class="fw-bold">{{ job.vehicle_reg_no }}</td>
-                <td>{{ job.customer?.name || 'N/A' }}</td>
+                <td class="ps-4 fw-bold text-danger font-monospace">{{ job.job_card_no }}</td>
+                <td class="fw-bold font-monospace">{{ job.vehicle_reg_no }}</td>
+                <td class="fw-bold">{{ job.customer?.name || 'N/A' }}</td>
                 <td>
-                  <span class="badge font-monospace rounded" :class="{
-                    'bg-secondary': job.status === 'Open',
-                    'bg-info text-dark': job.status === 'Inspection',
-                    'bg-warning text-dark': job.status === 'In Progress' || job.status === 'Waiting Parts',
-                    'bg-success': job.status === 'Completed'
+                  <span class="badge font-monospace px-2.5 py-1.5" :class="{
+                    'badge-open': job.status === 'Open',
+                    'badge-inspection': job.status === 'Inspection',
+                    'badge-progress': job.status === 'In Progress' || job.status === 'Waiting Parts',
+                    'badge-success': job.status === 'Completed'
                   }">{{ job.status }}</span>
                 </td>
-                <td class="text-truncate" style="max-width: 250px;">
+                <td class="text-truncate text-muted" style="max-width: 250px;">
                   {{ parseComplaints(job.complaints) }}
                 </td>
                 <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-dark btn-circle" @click="router.push(`/jobcards?id=${job.id}`)" title="View Job Card">
+                  <button class="btn btn-circle" @click="router.push(`/jobcards?id=${job.id}`)" title="View Job Card">
                     <ChevronRight :size="14" />
                   </button>
                 </td>
@@ -395,18 +398,19 @@ const formatCurrency = (val: number) => {
 
 <style scoped>
 .bg-glass {
-  background-color: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color) !important;
+  background-color: rgba(var(--bg-card-rgb), 0.8) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(var(--bg-card-rgb), 0.15) !important;
 }
 
 .metric-card {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 16px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .metric-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12) !important;
 }
 
 .border-danger-glow {
@@ -421,25 +425,160 @@ const formatCurrency = (val: number) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.metric-card:hover .icon-circle {
+  transform: scale(1.1);
+}
+
+/* Customized icon background gradients */
+.bg-danger.bg-opacity-10 {
+  background: linear-gradient(135deg, rgba(215, 25, 32, 0.15) 0%, rgba(215, 25, 32, 0.02) 100%) !important;
+}
+.bg-primary.bg-opacity-10 {
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.02) 100%) !important;
+}
+.bg-success.bg-opacity-10 {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.15) 0%, rgba(25, 135, 84, 0.02) 100%) !important;
+}
+.bg-secondary.bg-opacity-10 {
+  background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.02) 100%) !important;
+}
+
+/* Premium Buttons in ribbon */
+.btn-danger {
+  background: linear-gradient(135deg, #e62027 0%, #b81218 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(215, 25, 32, 0.25);
+  border-radius: 10px !important;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(215, 25, 32, 0.35);
+}
+
+.btn-dark {
+  background: linear-gradient(135deg, #2c3034 0%, #1a1d20 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 10px !important;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+}
+
+.btn-outline-danger {
+  border: 1.5px solid #d71920 !important;
+  color: #d71920 !important;
+  background: transparent !important;
+  border-radius: 10px !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-outline-danger:hover {
+  background-color: rgba(215, 25, 32, 0.05) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(215, 25, 32, 0.12);
 }
 
 .hover-lift {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(215, 25, 32, 0.15) !important;
-}
-
+/* Custom Circle Button */
 .btn-circle {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--border-color) !important;
+  border: none;
+  color: var(--text-main);
+  transition: all 0.25s ease;
+}
+.btn-circle:hover {
+  background-color: #d71920 !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+/* Sleek Progress Bars */
+.progress {
+  background-color: var(--border-color) !important;
+  height: 4px !important;
+  overflow: visible;
+}
+
+.progress-bar {
+  box-shadow: 0 0 8px currentColor;
+  background-image: linear-gradient(90deg, currentColor 0%, var(--bg-card) 200%) !important;
+}
+
+/* Table styling for Active repair queue */
+.table {
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+
+.table tr {
+  background-color: rgba(var(--bg-body-rgb), 0.3);
+  transition: background-color 0.15s ease;
+}
+
+.table tr:hover {
+  background-color: rgba(var(--bg-body-rgb), 0.7);
+}
+
+.table th {
+  border-bottom: 2.5px solid var(--border-color) !important;
+  padding: 12px 16px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+/* Custom Status Badges */
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 6px !important;
+}
+
+.badge-open {
+  background-color: rgba(108, 117, 125, 0.12) !important;
+  color: #6c757d !important;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.badge-inspection {
+  background-color: rgba(13, 202, 240, 0.12) !important;
+  color: #0dcaf0 !important;
+  border: 1px solid rgba(13, 202, 240, 0.2);
+}
+
+.badge-progress {
+  background-color: rgba(255, 193, 7, 0.12) !important;
+  color: #ffc107 !important;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.badge-success {
+  background-color: rgba(25, 135, 84, 0.12) !important;
+  color: #198754 !important;
+  border: 1px solid rgba(25, 135, 84, 0.2);
 }
 
 .svg-chart {

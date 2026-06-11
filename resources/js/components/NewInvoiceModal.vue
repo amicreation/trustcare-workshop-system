@@ -368,6 +368,14 @@ const formatDescription = (val: string) => {
   }).join(' ');
 }
 
+const formatName = (val: string) => {
+  if (!val) return '';
+  return val.trim().split(/\s+/).map(word => {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 const addInvoiceItem = () => {
   if (!tempItem.value.description) {
     alert('Please enter a description for the item.')
@@ -426,6 +434,7 @@ const handleSubmit = async () => {
         loading.value = false
         return
       }
+      customerForm.value.name = formatName(customerForm.value.name)
       const custRes = await axios.post('/api/customers', customerForm.value)
       customerId = custRes.data.id
     }
@@ -636,6 +645,7 @@ const selectExistingCustomer = (c: any) => {
                       placeholder="e.g. John Doe"
                       :readonly="!isNewCustomer"
                       required 
+                      @blur="customerForm.name = formatName(customerForm.name)"
                     />
                   </div>
                   <div class="col-12">

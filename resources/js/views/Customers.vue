@@ -71,8 +71,17 @@ const openEditModal = (customer: any) => {
   showModal.value = true
 }
 
+const formatName = (val: string) => {
+  if (!val) return '';
+  return val.trim().split(/\s+/).map(word => {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 const saveCustomer = async () => {
   try {
+    formCustomer.value.name = formatName(formCustomer.value.name)
     if (editMode.value && formCustomer.value.id) {
       await axios.put(`/api/customers/${formCustomer.value.id}`, formCustomer.value)
     } else {
@@ -315,7 +324,7 @@ onMounted(() => {
             <div class="row g-3">
               <div class="col-12 col-md-6">
                 <label class="form-label small fw-bold text-muted uppercase">Full Name <span class="text-danger">*</span></label>
-                <input type="text" v-model="formCustomer.name" class="form-control" placeholder="e.g. Rajesh Kumar" required />
+                <input type="text" v-model="formCustomer.name" class="form-control" placeholder="e.g. Rajesh Kumar" required @blur="formCustomer.name = formatName(formCustomer.name)" />
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label small fw-bold text-muted uppercase">Mobile Number <span class="text-danger">*</span></label>

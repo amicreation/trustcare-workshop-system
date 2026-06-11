@@ -216,6 +216,14 @@ const removeComplaint = (index: number) => {
   formJob.value.complaints.splice(index, 1)
 }
 
+const formatName = (val: string) => {
+  if (!val) return '';
+  return val.trim().split(/\s+/).map(word => {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 const handleSubmit = async () => {
   if (!formJob.value.vehicle_reg_no) {
     alert('Please enter a vehicle registration number.')
@@ -233,6 +241,7 @@ const handleSubmit = async () => {
         loading.value = false
         return
       }
+      customerForm.value.name = formatName(customerForm.value.name)
       const custRes = await axios.post('/api/customers', customerForm.value)
       customerId = custRes.data.id
     }
@@ -446,6 +455,7 @@ const selectExistingCustomer = (c: any) => {
                       placeholder="e.g. John Doe"
                       :readonly="!isNewCustomer"
                       required 
+                      @blur="customerForm.name = formatName(customerForm.name)"
                     />
                   </div>
                   <div class="col-12">

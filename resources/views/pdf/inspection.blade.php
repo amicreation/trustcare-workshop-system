@@ -147,7 +147,7 @@
     <table class="meta-table">
         <tr>
             <td style="width: 50%;">
-                <span class="field-label">Customer Name:</span> {{ $customer->name }}<br>
+                <span class="field-label">Customer Name:</span> {{ ucwords(strtolower($customer->name)) }}<br>
                 <span class="field-label">Contact:</span> {{ $customer->mobile }}
             </td>
             <td style="width: 50%;">

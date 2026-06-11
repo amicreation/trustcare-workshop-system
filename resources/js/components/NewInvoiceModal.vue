@@ -794,9 +794,9 @@ const selectExistingCustomer = (c: any) => {
                   <td class="py-1 fw-bold text-muted">GST Tax Total:</td>
                   <td class="py-1 text-end font-monospace">₹{{ formCalculations.gstTotal.toFixed(2) }}</td>
                 </tr>
-                <tr class="border-bottom" v-if="formInvoice.discount > 0">
+                <tr class="border-bottom" v-if="parseFloat(formInvoice.discount) > 0">
                   <td class="py-1 fw-bold text-danger">Discount:</td>
-                  <td class="py-1 text-end text-danger font-monospace">-₹{{ formInvoice.discount.toFixed(2) }}</td>
+                  <td class="py-1 text-end text-danger font-monospace">-₹{{ parseFloat(formInvoice.discount || 0).toFixed(2) }}</td>
                 </tr>
                 <tr class="border-bottom">
                   <td class="py-2 fw-bold text-danger fs-6">Grand Total:</td>

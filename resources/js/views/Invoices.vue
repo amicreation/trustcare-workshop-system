@@ -306,18 +306,32 @@ const importJobCard = (jc: any) => {
   }
 }
 
+const formatDescription = (val: string) => {
+  if (!val) return '';
+  return val.trim().split(/\s+/).map(word => {
+    if (!word) return '';
+    // If it contains letters and numbers (like 5w40, 10w30, skf123), capitalize all of it
+    if (/[a-zA-Z]/.test(word) && /[0-9]/.test(word)) {
+      return word.toUpperCase();
+    }
+    // Otherwise, capitalize first letter (Title Case)
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+}
+
 const addInvoiceItem = () => {
   if (!tempItem.value.description) {
     alert('Please enter a description for the item.')
     return
   }
   
+  const formattedDesc = formatDescription(tempItem.value.description)
   const base = tempItem.value.qty * tempItem.value.rate
   const tax = (base * tempItem.value.tax_percent) / 100
   
   formInvoice.value.items.push({
     type: tempItem.value.type,
-    description: tempItem.value.description,
+    description: formattedDesc,
     qty: tempItem.value.qty,
     rate: tempItem.value.rate,
     cost: tempItem.value.cost || 0,
@@ -594,9 +608,7 @@ const printWindow = () => {
                     <span class="field-label">Make & Model:</span> {{ selectedInvoice.vehicle?.make }} {{ selectedInvoice.vehicle?.model }}
                   </td>
                   <td>
-                    <span class="field-label">Odometer:</span> {{ selectedInvoice.km_reading }} KMS<br>
-                    <span class="field-label">Chassis No:</span> {{ selectedInvoice.vehicle?.chassis_no || 'N/A' }}<br>
-                    <span class="field-label">Engine No:</span> {{ selectedInvoice.vehicle?.engine_no || 'N/A' }}
+                    <span class="field-label">Odometer:</span> {{ selectedInvoice.km_reading }} KMS
                   </td>
                 </tr>
               </table>
@@ -757,7 +769,7 @@ const printWindow = () => {
                     class="form-control form-control-sm" 
                     placeholder="e.g. Engine Oil, Front brake pads..." 
                     @focus="showSuggestions = true"
-                    @blur="templateTimeout(() => showSuggestions = false, 200)"
+                    @blur="tempItem.description = formatDescription(tempItem.description); templateTimeout(() => showSuggestions = false, 200)"
                   />
                   <!-- Suggestion list -->
                   <div v-if="showSuggestions && suggestions.length > 0" class="suggestions-dropdown position-absolute w-100 mt-1 small">

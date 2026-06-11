@@ -231,14 +231,6 @@ onMounted(() => {
                   <span class="text-muted d-block small-label">Odometer</span>
                   <span>{{ selectedVehicle.current_km }} km</span>
                 </div>
-                <div class="col-6">
-                  <span class="text-muted d-block small-label">Engine No</span>
-                  <span class="font-monospace text-uppercase">{{ selectedVehicle.engine_no || 'N/A' }}</span>
-                </div>
-                <div class="col-6">
-                  <span class="text-muted d-block small-label">Chassis No</span>
-                  <span class="font-monospace text-uppercase">{{ selectedVehicle.chassis_no || 'N/A' }}</span>
-                </div>
               </div>
             </div>
 
@@ -347,7 +339,7 @@ onMounted(() => {
           <div class="card-body px-4 py-3" style="max-height: 70vh; overflow-y: auto;">
             <div class="row g-3">
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Registration No</label>
+                <label class="form-label small fw-bold text-muted uppercase">Registration No <span class="text-danger">*</span></label>
                 <input 
                   type="text" 
                   v-model="formVehicle.registration_no" 
@@ -359,21 +351,21 @@ onMounted(() => {
                 />
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Owner / Customer</label>
+                <label class="form-label small fw-bold text-muted uppercase">Owner / Customer <span class="text-danger">*</span></label>
                 <select v-model="formVehicle.customer_id" class="form-select" required>
                   <option v-for="c in customersList" :key="c.id" :value="c.id">{{ c.name }} ({{ c.mobile }})</option>
                 </select>
               </div>
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold text-muted uppercase">Make / Brand</label>
+                <label class="form-label small fw-bold text-muted uppercase">Make / Brand <span class="text-danger">*</span></label>
                 <input type="text" v-model="formVehicle.make" class="form-control" placeholder="e.g. Maruti Suzuki" required />
               </div>
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold text-muted uppercase">Model Name</label>
+                <label class="form-label small fw-bold text-muted uppercase">Model Name <span class="text-danger">*</span></label>
                 <input type="text" v-model="formVehicle.model" class="form-control" placeholder="e.g. Swift" required />
               </div>
               <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold text-muted uppercase">Fuel Type</label>
+                <label class="form-label small fw-bold text-muted uppercase">Fuel Type <span class="text-danger">*</span></label>
                 <select v-model="formVehicle.fuel_type" class="form-select" required>
                   <option value="PETROL">PETROL</option>
                   <option value="DIESEL">DIESEL</option>
@@ -392,14 +384,6 @@ onMounted(() => {
               <div class="col-12 col-md-4">
                 <label class="form-label small fw-bold text-muted uppercase">Body Color</label>
                 <input type="text" v-model="formVehicle.color" class="form-control" placeholder="e.g. RED" />
-              </div>
-              <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Engine No</label>
-                <input type="text" v-model="formVehicle.engine_no" class="form-control font-monospace" placeholder="Optional Engine ID" />
-              </div>
-              <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Chassis No</label>
-                <input type="text" v-model="formVehicle.chassis_no" class="form-control font-monospace" placeholder="Optional Chassis ID" />
               </div>
 
               <!-- Insurance Details -->

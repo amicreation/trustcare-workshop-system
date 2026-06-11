@@ -314,11 +314,11 @@ onMounted(() => {
           <div class="card-body px-4 py-3" style="max-height: 70vh; overflow-y: auto;">
             <div class="row g-3">
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Full Name</label>
+                <label class="form-label small fw-bold text-muted uppercase">Full Name <span class="text-danger">*</span></label>
                 <input type="text" v-model="formCustomer.name" class="form-control" placeholder="e.g. Rajesh Kumar" required />
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Mobile Number</label>
+                <label class="form-label small fw-bold text-muted uppercase">Mobile Number <span class="text-danger">*</span></label>
                 <input type="text" v-model="formCustomer.mobile" class="form-control" placeholder="10-digit number" required />
               </div>
               <div class="col-12 col-md-6">
@@ -326,7 +326,7 @@ onMounted(() => {
                 <input type="text" v-model="formCustomer.alternate_mobile" class="form-control" placeholder="Optional alternative contact" />
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label small fw-bold text-muted uppercase">Email Address</label>
+                <label class="form-label small fw-bold text-muted uppercase">Email Address (Optional)</label>
                 <input type="email" v-model="formCustomer.email" class="form-control" placeholder="name@domain.com" />
               </div>
               <div class="col-12">

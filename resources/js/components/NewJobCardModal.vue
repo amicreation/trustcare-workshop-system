@@ -298,18 +298,18 @@ const selectExistingCustomer = (c: any) => {
           <div class="row g-3">
             <!-- Basic Details -->
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold text-muted uppercase">Job Card Date</label>
+              <label class="form-label small fw-bold text-muted uppercase">Job Card Date <span class="text-danger">*</span></label>
               <input type="date" v-model="formJob.date" class="form-control" required />
             </div>
             
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold text-muted uppercase">Odometer (KM)</label>
+              <label class="form-label small fw-bold text-muted uppercase">Odometer (KM) <span class="text-danger">*</span></label>
               <input type="number" v-model="formJob.km_reading" class="form-control" required />
             </div>
 
             <!-- Vehicle Search & Reg No -->
             <div class="col-12 col-md-6 position-relative">
-              <label class="form-label small fw-bold text-muted uppercase">Vehicle Registration No</label>
+              <label class="form-label small fw-bold text-muted uppercase">Vehicle Registration No <span class="text-danger">*</span></label>
               <div class="input-group">
                 <input 
                   type="text" 
@@ -348,7 +348,7 @@ const selectExistingCustomer = (c: any) => {
 
             <!-- Fuel Level -->
             <div class="col-12 col-md-6">
-              <label class="form-label small fw-bold text-muted uppercase">Fuel Level</label>
+              <label class="form-label small fw-bold text-muted uppercase">Fuel Level <span class="text-danger">*</span></label>
               <select v-model="formJob.fuel_level" class="form-select" required>
                 <option value="Empty">Empty</option>
                 <option value="1/4 Tank">1/4 Tank</option>
@@ -366,11 +366,11 @@ const selectExistingCustomer = (c: any) => {
               </div>
               <div class="row g-2">
                 <div class="col-6 col-md-4">
-                  <label class="form-label small-label text-muted">Make</label>
+                  <label class="form-label small-label text-muted">Make <span class="text-danger">*</span></label>
                   <input type="text" v-model="vehicleForm.make" class="form-control form-control-sm" placeholder="e.g. Maruti Suzuki" :readonly="!isNewVehicle" required />
                 </div>
                 <div class="col-6 col-md-4">
-                  <label class="form-label small-label text-muted">Model</label>
+                  <label class="form-label small-label text-muted">Model <span class="text-danger">*</span></label>
                   <input type="text" v-model="vehicleForm.model" class="form-control form-control-sm" placeholder="e.g. Swift" :readonly="!isNewVehicle" required />
                 </div>
                 <div class="col-6 col-md-4">
@@ -387,20 +387,12 @@ const selectExistingCustomer = (c: any) => {
                   <label class="form-label small-label text-muted">Year</label>
                   <input type="number" v-model="vehicleForm.year" class="form-control form-control-sm" :readonly="!isNewVehicle" />
                 </div>
-                <div class="col-6 col-md-4">
-                  <label class="form-label small-label text-muted">Engine No</label>
-                  <input type="text" v-model="vehicleForm.engine_no" class="form-control form-control-sm" :readonly="!isNewVehicle" />
-                </div>
-                <div class="col-6 col-md-4">
-                  <label class="form-label small-label text-muted">Chassis No</label>
-                  <input type="text" v-model="vehicleForm.chassis_no" class="form-control form-control-sm" :readonly="!isNewVehicle" />
-                </div>
               </div>
             </div>
 
             <!-- Customer Search / Input -->
             <div class="col-12 col-md-6 position-relative">
-              <label class="form-label small fw-bold text-muted uppercase">Customer Contact Mobile</label>
+              <label class="form-label small fw-bold text-muted uppercase">Customer Contact Mobile <span class="text-danger">*</span></label>
               <div class="input-group">
                 <input 
                   type="text" 
@@ -446,7 +438,7 @@ const selectExistingCustomer = (c: any) => {
                 </div>
                 <div class="row g-2">
                   <div class="col-12">
-                    <label class="form-label small-label text-muted">Full Name</label>
+                    <label class="form-label small-label text-muted">Full Name <span class="text-danger">*</span></label>
                     <input 
                       type="text" 
                       v-model="customerForm.name" 
@@ -457,7 +449,7 @@ const selectExistingCustomer = (c: any) => {
                     />
                   </div>
                   <div class="col-12">
-                    <label class="form-label small-label text-muted">Email Address</label>
+                    <label class="form-label small-label text-muted">Email Address (Optional)</label>
                     <input type="email" v-model="customerForm.email" class="form-control form-control-sm" :readonly="!isNewCustomer" placeholder="optional" />
                   </div>
                   <div class="col-12">
@@ -504,16 +496,91 @@ const selectExistingCustomer = (c: any) => {
 
 <style scoped>
 .bg-glass {
-  backdrop-filter: blur(10px);
+  background-color: rgba(var(--bg-card-rgb), 0.8) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(var(--bg-card-rgb), 0.2) !important;
 }
+
 .small-label {
   font-size: 11px;
 }
+
 .btn-icon {
   width: 32px;
   height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Scrollbar Enhancement */
+.card-body::-webkit-scrollbar {
+  width: 6px;
+}
+.card-body::-webkit-scrollbar-thumb {
+  background-color: rgba(215, 25, 32, 0.3);
+  border-radius: 3px;
+}
+.card-body::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Form inputs & selects */
+.form-control, .form-select {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #d71920 !important;
+  box-shadow: 0 0 0 4px rgba(215, 25, 32, 0.12) !important;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.input-group .form-control {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.input-group .btn {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-color: var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.input-group .btn:hover {
+  background-color: #d71920;
+  border-color: #d71920;
+  color: #fff;
+}
+
+/* Premium Buttons */
+.btn-danger {
+  background: linear-gradient(135deg, #e62027 0%, #b81218 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 10px rgba(215, 25, 32, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(215, 25, 32, 0.3);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
 }
 </style>

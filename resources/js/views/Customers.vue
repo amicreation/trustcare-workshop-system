@@ -3,8 +3,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { 
   Users, Search, PlusCircle, Edit, History, 
-  MapPin, Phone, Mail, FileText, ChevronRight, X
+  MapPin, Phone, Mail, FileText, ChevronRight, X, Trash2
 } from 'lucide-vue-next'
+import { useAuthStore } from '../stores/auth'
+const authStore = useAuthStore()
 
 const customers = ref<any[]>([])
 const searchQuery = ref('')
@@ -112,6 +114,35 @@ const selectCustomer = async (customer: any) => {
 onMounted(() => {
   fetchCustomers()
 })
+
+// Delete confirmation states
+const showDeleteConfirmModal = ref(false)
+const customerToDelete = ref<any | null>(null)
+const deleteConfirmText = ref('')
+
+const confirmDeleteCustomer = (customer: any) => {
+  customerToDelete.value = customer
+  deleteConfirmText.value = ''
+  showDeleteConfirmModal.value = true
+}
+
+const executeDeleteCustomer = async () => {
+  if (!customerToDelete.value) return
+  if (deleteConfirmText.value !== customerToDelete.value.mobile) {
+    alert('Mobile number does not match confirmation text.')
+    return
+  }
+  try {
+    await axios.delete(`/api/customers/${customerToDelete.value.id}`)
+    showDeleteConfirmModal.value = false
+    customerToDelete.value = null
+    selectedCustomer.value = null
+    fetchCustomers()
+    alert('Customer record deleted successfully.')
+  } catch (err: any) {
+    alert(err.response?.data?.error || 'Failed to delete customer.')
+  }
+}
 </script>
 
 <template>
@@ -189,6 +220,9 @@ onMounted(() => {
                       <button class="btn btn-sm btn-outline-secondary me-2 btn-icon" @click="openEditModal(c)" title="Edit">
                         <Edit :size="14" />
                       </button>
+                      <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger me-2 btn-icon" @click="confirmDeleteCustomer(c)" title="Delete">
+                        <Trash2 :size="14" />
+                      </button>
                       <button class="btn btn-sm btn-dark btn-icon" @click="selectCustomer(c)">
                         <ChevronRight :size="14" />
                       </button>
@@ -209,9 +243,14 @@ onMounted(() => {
               <span class="badge bg-danger bg-opacity-10 text-danger text-uppercase fw-bold small px-2 py-1 mb-2">Customer Profile</span>
               <h4 class="fw-bold m-0">{{ selectedCustomer.name }}</h4>
             </div>
-            <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="selectedCustomer = null">
-              <X :size="18" />
-            </button>
+            <div class="d-flex gap-2">
+              <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger btn-icon rounded-circle" @click="confirmDeleteCustomer(selectedCustomer)" title="Delete Customer">
+                <Trash2 :size="14" />
+              </button>
+              <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="selectedCustomer = null">
+                <X :size="18" />
+              </button>
+            </div>
           </div>
 
           <div class="card-body px-4">
@@ -373,6 +412,45 @@ onMounted(() => {
             <button type="submit" class="btn btn-danger px-4" style="background-color: #d71920; border-color: #d71920;">Save Changes</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="modal-backdrop bg-black bg-opacity-50 position-fixed top-0 start-0 w-100 h-100 z-3 d-flex align-items-center justify-content-center">
+      <div class="card border-0 shadow-lg bg-glass w-100 m-3 animate-zoom-in" style="max-width: 450px;">
+        <div class="card-header border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold m-0 text-danger">Confirm Customer Deletion</h5>
+          <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="showDeleteConfirmModal = false">
+            <X :size="18" />
+          </button>
+        </div>
+        <div class="card-body px-4 py-3">
+          <p class="small text-muted mb-3">
+            Are you sure you want to delete customer <strong class="text-danger">{{ customerToDelete?.name }}</strong>? 
+            This action is permanent and will delete their entire history and owned vehicles records if there are cascading settings.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small-label fw-bold text-muted uppercase">To confirm, type the customer's mobile number: <strong class="text-danger select-all">{{ customerToDelete?.mobile }}</strong></label>
+            <input 
+              type="text" 
+              v-model="deleteConfirmText" 
+              class="form-control text-center font-monospace" 
+              :placeholder="customerToDelete?.mobile"
+              required 
+            />
+          </div>
+        </div>
+        <div class="card-footer border-0 bg-transparent px-4 pb-4 pt-0 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-secondary px-3" @click="showDeleteConfirmModal = false">Cancel</button>
+          <button 
+            type="button" 
+            class="btn btn-danger px-4" 
+            :disabled="deleteConfirmText !== customerToDelete?.mobile"
+            @click="executeDeleteCustomer"
+          >
+            Confirm Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>

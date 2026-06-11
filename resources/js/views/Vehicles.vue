@@ -3,8 +3,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { 
   Car, Search, PlusCircle, Edit, History, 
-  User, CheckSquare, ShieldCheck, ChevronRight, X
+  User, CheckSquare, ShieldCheck, ChevronRight, X, Trash2
 } from 'lucide-vue-next'
+import { useAuthStore } from '../stores/auth'
+const authStore = useAuthStore()
 
 const vehicles = ref<any[]>([])
 const customersList = ref<any[]>([])
@@ -116,6 +118,35 @@ onMounted(() => {
   fetchVehicles()
   fetchCustomers()
 })
+
+// Delete confirmation states
+const showDeleteConfirmModal = ref(false)
+const vehicleToDelete = ref<any | null>(null)
+const deleteConfirmText = ref('')
+
+const confirmDeleteVehicle = (vehicle: any) => {
+  vehicleToDelete.value = vehicle
+  deleteConfirmText.value = ''
+  showDeleteConfirmModal.value = true
+}
+
+const executeDeleteVehicle = async () => {
+  if (!vehicleToDelete.value) return
+  if (deleteConfirmText.value !== vehicleToDelete.value.registration_no) {
+    alert('Registration number does not match confirmation text.')
+    return
+  }
+  try {
+    await axios.delete(`/api/vehicles/${vehicleToDelete.value.registration_no}`)
+    showDeleteConfirmModal.value = false
+    vehicleToDelete.value = null
+    selectedVehicle.value = null
+    fetchVehicles()
+    alert('Vehicle record deleted successfully.')
+  } catch (err: any) {
+    alert(err.response?.data?.error || 'Failed to delete vehicle.')
+  }
+}
 </script>
 
 <template>
@@ -190,6 +221,9 @@ onMounted(() => {
                       <button class="btn btn-sm btn-outline-secondary me-2 btn-icon" @click="openEditModal(v)" title="Edit">
                         <Edit :size="14" />
                       </button>
+                      <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger me-2 btn-icon" @click="confirmDeleteVehicle(v)" title="Delete">
+                        <Trash2 :size="14" />
+                      </button>
                       <button class="btn btn-sm btn-dark btn-icon" @click="selectVehicle(v)">
                         <ChevronRight :size="14" />
                       </button>
@@ -210,9 +244,14 @@ onMounted(() => {
               <span class="badge bg-danger bg-opacity-10 text-danger font-monospace fw-bold px-2 py-1 mb-2">{{ selectedVehicle.registration_no }}</span>
               <h4 class="fw-bold m-0">{{ selectedVehicle.make }} {{ selectedVehicle.model }}</h4>
             </div>
-            <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="selectedVehicle = null">
-              <X :size="18" />
-            </button>
+            <div class="d-flex gap-2">
+              <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger btn-icon rounded-circle" @click="confirmDeleteVehicle(selectedVehicle)" title="Delete Vehicle">
+                <Trash2 :size="14" />
+              </button>
+              <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="selectedVehicle = null">
+                <X :size="18" />
+              </button>
+            </div>
           </div>
 
           <div class="card-body px-4">
@@ -425,6 +464,45 @@ onMounted(() => {
             <button type="submit" class="btn btn-danger px-4" style="background-color: #d71920; border-color: #d71920;">Save Changes</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="modal-backdrop bg-black bg-opacity-50 position-fixed top-0 start-0 w-100 h-100 z-3 d-flex align-items-center justify-content-center">
+      <div class="card border-0 shadow-lg bg-glass w-100 m-3 animate-zoom-in" style="max-width: 450px;">
+        <div class="card-header border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold m-0 text-danger">Confirm Vehicle Deletion</h5>
+          <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="showDeleteConfirmModal = false">
+            <X :size="18" />
+          </button>
+        </div>
+        <div class="card-body px-4 py-3">
+          <p class="small text-muted mb-3">
+            Are you sure you want to delete vehicle <strong class="text-danger">{{ vehicleToDelete?.registration_no }}</strong> ({{ vehicleToDelete?.make }} {{ vehicleToDelete?.model }})? 
+            This action is permanent and will delete all associated histories.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small-label fw-bold text-muted uppercase">To confirm, type the vehicle registration: <strong class="text-danger select-all">{{ vehicleToDelete?.registration_no }}</strong></label>
+            <input 
+              type="text" 
+              v-model="deleteConfirmText" 
+              class="form-control text-center font-monospace text-uppercase" 
+              :placeholder="vehicleToDelete?.registration_no"
+              required 
+            />
+          </div>
+        </div>
+        <div class="card-footer border-0 bg-transparent px-4 pb-4 pt-0 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-secondary px-3" @click="showDeleteConfirmModal = false">Cancel</button>
+          <button 
+            type="button" 
+            class="btn btn-danger px-4" 
+            :disabled="deleteConfirmText !== vehicleToDelete?.registration_no"
+            @click="executeDeleteVehicle"
+          >
+            Confirm Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>

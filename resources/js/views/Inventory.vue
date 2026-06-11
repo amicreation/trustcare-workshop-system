@@ -146,11 +146,30 @@ const saveItem = async () => {
   }
 }
 
-const deleteItem = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this inventory item?')) return
+// Delete Item Confirmation State
+const showItemDeleteConfirmModal = ref(false)
+const itemToDelete = ref<any | null>(null)
+const deleteConfirmText = ref('')
+
+const confirmDeleteItem = (item: any) => {
+  itemToDelete.value = item
+  deleteConfirmText.value = ''
+  showItemDeleteConfirmModal.value = true
+}
+
+const executeDeleteItem = async () => {
+  if (!itemToDelete.value) return
+  if (deleteConfirmText.value !== itemToDelete.value.name) {
+    alert('Confirmation text does not match the item name.')
+    return
+  }
   try {
-    await axios.delete(`/api/inventory/items/${id}`)
+    await axios.delete(`/api/inventory/items/${itemToDelete.value.id}`)
+    showItemDeleteConfirmModal.value = false
+    itemToDelete.value = null
     fetchItems()
+    fetchTransactions()
+    alert('Inventory item deleted successfully.')
   } catch (err: any) {
     alert(err.response?.data?.error || 'Failed to delete item.')
   }
@@ -188,10 +207,15 @@ const saveCategory = async () => {
 }
 
 const deleteCategory = async (id: number) => {
+  if (!authStore.isAdmin) {
+    alert('Only administrators are allowed to delete categories.')
+    return
+  }
   if (!confirm('Are you sure you want to delete this category?')) return
   try {
     await axios.delete(`/api/inventory/categories/${id}`)
     fetchCategories()
+    alert('Category deleted successfully.')
   } catch (err: any) {
     alert(err.response?.data?.error || 'Failed to delete category.')
   }
@@ -362,7 +386,7 @@ const saveStockAdjustment = async () => {
                     <button class="btn btn-sm btn-outline-secondary me-2 btn-icon" @click="openEditItemModal(item)" title="Edit">
                       <Edit :size="14" />
                     </button>
-                    <button class="btn btn-sm btn-outline-dark btn-icon" @click="deleteItem(item.id)" title="Delete">
+                    <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger btn-icon" @click="confirmDeleteItem(item)" title="Delete">
                       <Trash2 :size="14" />
                     </button>
                   </td>
@@ -454,7 +478,7 @@ const saveStockAdjustment = async () => {
                     <button class="btn btn-sm btn-outline-secondary me-2 btn-icon" @click="openEditCategoryModal(cat)" title="Edit">
                       <Edit :size="14" />
                     </button>
-                    <button class="btn btn-sm btn-outline-dark btn-icon" @click="deleteCategory(cat.id)" title="Delete">
+                    <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger btn-icon" @click="deleteCategory(cat.id)" title="Delete">
                       <Trash2 :size="14" />
                     </button>
                   </td>
@@ -591,6 +615,45 @@ const saveStockAdjustment = async () => {
             <button type="submit" class="btn btn-danger px-4" style="background-color: #d71920; border-color: #d71920;">Log Transaction</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showItemDeleteConfirmModal" class="modal-backdrop bg-black bg-opacity-50 position-fixed top-0 start-0 w-100 h-100 z-3 d-flex align-items-center justify-content-center">
+      <div class="card border-0 shadow-lg bg-glass w-100 m-3 animate-zoom-in" style="max-width: 450px;">
+        <div class="card-header border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold m-0 text-danger">Confirm Item Deletion</h5>
+          <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="showItemDeleteConfirmModal = false">
+            <X :size="18" />
+          </button>
+        </div>
+        <div class="card-body px-4 py-3">
+          <p class="small text-muted mb-3">
+            Are you sure you want to delete inventory item <strong class="text-danger">{{ itemToDelete?.name }}</strong>? 
+            This action is permanent and cannot be undone.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small-label fw-bold text-muted uppercase">To confirm, type the item name: <strong class="text-danger select-all">{{ itemToDelete?.name }}</strong></label>
+            <input 
+              type="text" 
+              v-model="deleteConfirmText" 
+              class="form-control text-center font-monospace" 
+              :placeholder="itemToDelete?.name"
+              required 
+            />
+          </div>
+        </div>
+        <div class="card-footer border-0 bg-transparent px-4 pb-4 pt-0 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-secondary px-3" @click="showItemDeleteConfirmModal = false">Cancel</button>
+          <button 
+            type="button" 
+            class="btn btn-danger px-4" 
+            :disabled="deleteConfirmText !== itemToDelete?.name"
+            @click="executeDeleteItem"
+          >
+            Confirm Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>

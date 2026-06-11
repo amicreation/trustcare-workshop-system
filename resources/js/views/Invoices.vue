@@ -27,6 +27,11 @@ const loading = ref(false)
 const detailsLoading = ref(false)
 const selectedInvoice = ref<any | null>(null)
 
+// Delete Confirmation State
+const showDeleteConfirmModal = ref(false)
+const invoiceToDelete = ref<any | null>(null)
+const deleteConfirmText = ref('')
+
 // Invoice Form State
 const showFormModal = ref(false)
 const editMode = ref(false)
@@ -430,12 +435,25 @@ const saveInvoice = async () => {
   }
 }
 
-const deleteInvoice = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this invoice? This will restore inventory stocks.')) return
+const confirmDeleteInvoice = (inv: any) => {
+  invoiceToDelete.value = inv
+  deleteConfirmText.value = ''
+  showDeleteConfirmModal.value = true
+}
+
+const executeDeleteInvoice = async () => {
+  if (!invoiceToDelete.value) return
+  if (deleteConfirmText.value !== invoiceToDelete.value.invoice_no) {
+    alert('Invoice number does not match confirmation text.')
+    return
+  }
   try {
-    await axios.delete(`/api/invoices/${id}`)
+    await axios.delete(`/api/invoices/${invoiceToDelete.value.id}`)
+    showDeleteConfirmModal.value = false
+    invoiceToDelete.value = null
     selectedInvoice.value = null
     fetchInvoices()
+    alert('Invoice deleted successfully.')
   } catch (err: any) {
     alert(err.response?.data?.error || 'Failed to delete invoice.')
   }
@@ -585,7 +603,7 @@ const printWindow = () => {
                 <Download :size="14" />
                 <span>PDF</span>
               </button>
-              <button class="btn btn-sm btn-outline-dark btn-icon rounded-circle" @click="deleteInvoice(selectedInvoice.id)" title="Delete Invoice">
+              <button v-if="authStore.isAdmin" class="btn btn-sm btn-outline-danger btn-icon rounded-circle" @click="confirmDeleteInvoice(selectedInvoice)" title="Delete Invoice">
                 <Trash2 :size="14" />
               </button>
               <button class="btn btn-sm btn-outline-secondary btn-icon rounded-circle" @click="selectedInvoice = null">
@@ -951,6 +969,45 @@ const printWindow = () => {
             <button type="submit" class="btn btn-danger px-4" style="background-color: #d71920; border-color: #d71920;">{{ editMode ? 'Update Invoice Bill' : 'Generate Invoice Bill' }}</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirmModal" class="modal-backdrop bg-black bg-opacity-50 position-fixed top-0 start-0 w-100 h-100 z-3 d-flex align-items-center justify-content-center noprint">
+      <div class="card border-0 shadow-lg bg-glass w-100 m-3 animate-zoom-in" style="max-width: 450px;">
+        <div class="card-header border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold m-0 text-danger">Confirm Invoice Deletion</h5>
+          <button class="btn btn-sm btn-outline-secondary border-0 btn-icon rounded-circle" @click="showDeleteConfirmModal = false">
+            <X :size="18" />
+          </button>
+        </div>
+        <div class="card-body px-4 py-3">
+          <p class="small text-muted mb-3">
+            Are you sure you want to delete invoice <strong class="text-danger">{{ invoiceToDelete?.invoice_no }}</strong>? 
+            This action is permanent and will restore inventory stock quantities.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small-label fw-bold text-muted uppercase">To confirm, type the invoice number: <strong class="text-danger select-all">{{ invoiceToDelete?.invoice_no }}</strong></label>
+            <input 
+              type="text" 
+              v-model="deleteConfirmText" 
+              class="form-control text-center font-monospace" 
+              :placeholder="invoiceToDelete?.invoice_no"
+              required 
+            />
+          </div>
+        </div>
+        <div class="card-footer border-0 bg-transparent px-4 pb-4 pt-0 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-secondary px-3" @click="showDeleteConfirmModal = false">Cancel</button>
+          <button 
+            type="button" 
+            class="btn btn-danger px-4" 
+            :disabled="deleteConfirmText !== invoiceToDelete?.invoice_no"
+            @click="executeDeleteInvoice"
+          >
+            Confirm Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>

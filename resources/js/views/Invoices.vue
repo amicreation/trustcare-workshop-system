@@ -242,6 +242,12 @@ const openEditInvoiceModal = () => {
   showFormModal.value = true
 }
 
+const parseNumber = (val: any, fallback = 0): number => {
+  if (val === null || val === undefined || val === '') return fallback
+  const num = parseFloat(val)
+  return isNaN(num) ? fallback : num
+}
+
 const importJobCard = (jc: any) => {
   formInvoice.value.customer_id = jc.customer_id
   formInvoice.value.vehicle_reg_no = jc.vehicle_reg_no
@@ -288,18 +294,19 @@ const importJobCard = (jc: any) => {
       parts.forEach((p: any) => {
         // Look up item in database to match price
         const match = inventoryItems.value.find(i => i.name.toLowerCase() === p.name.toLowerCase())
-        const rate = match ? parseFloat(match.selling_price) : 100
-        const cost = match ? parseFloat(match.purchase_price) : 50
-        const tax = match ? parseFloat(match.gst_percent) : 18
+        const rate = match ? parseNumber(match.selling_price, 100) : 100
+        const cost = match ? parseNumber(match.purchase_price, 50) : 50
+        const tax = match ? parseNumber(match.gst_percent, 18) : 18
+        const qty = parseNumber(p.qty, 1)
         
         formInvoice.value.items.push({
           type: 'Part',
           description: p.name,
-          qty: p.qty,
+          qty,
           rate,
           cost,
           tax_percent: tax,
-          amount: p.qty * rate * (1 + tax / 100)
+          amount: qty * rate * (1 + tax / 100)
         })
       })
     })
@@ -325,17 +332,35 @@ const addInvoiceItem = () => {
     return
   }
   
+  const qtyNum = parseNumber(tempItem.value.qty, 1)
+  const rateNum = parseNumber(tempItem.value.rate, 0)
+  const taxNum = parseNumber(tempItem.value.tax_percent, 18)
+  const costNum = parseNumber(tempItem.value.cost, 0)
+
+  if (qtyNum <= 0) {
+    alert('Please enter a valid quantity (greater than 0).')
+    return
+  }
+  if (rateNum < 0) {
+    alert('Please enter a valid rate (0 or greater).')
+    return
+  }
+  if (taxNum < 0) {
+    alert('Please enter a valid GST tax percentage (0 or greater).')
+    return
+  }
+  
   const formattedDesc = formatDescription(tempItem.value.description)
-  const base = tempItem.value.qty * tempItem.value.rate
-  const tax = (base * tempItem.value.tax_percent) / 100
+  const base = qtyNum * rateNum
+  const tax = (base * taxNum) / 100
   
   formInvoice.value.items.push({
     type: tempItem.value.type,
     description: formattedDesc,
-    qty: tempItem.value.qty,
-    rate: tempItem.value.rate,
-    cost: tempItem.value.cost || 0,
-    tax_percent: tempItem.value.tax_percent,
+    qty: qtyNum,
+    rate: rateNum,
+    cost: costNum,
+    tax_percent: taxNum,
     amount: base + tax
   })
   
@@ -368,22 +393,40 @@ const saveInvoice = async () => {
   
   try {
     let res
+    const cleanReg = formInvoice.value.vehicle_reg_no.toUpperCase().replace(/\s/g, '')
+    const sanitizedItems = formInvoice.value.items.map(item => ({
+      type: item.type,
+      description: item.description,
+      qty: parseNumber(item.qty, 1),
+      rate: parseNumber(item.rate, 0),
+      cost: parseNumber(item.cost, 0),
+      tax_percent: parseNumber(item.tax_percent, 18),
+      amount: parseNumber(item.amount, 0)
+    }))
+    
+    const payload = {
+      ...formInvoice.value,
+      vehicle_reg_no: cleanReg,
+      items: sanitizedItems,
+      paid_amount: parseNumber(formInvoice.value.paid_amount, 0),
+      discount: parseNumber(formInvoice.value.discount, 0)
+    }
+    
     if (editMode.value) {
-      res = await axios.put(`/api/invoices/${(formInvoice.value as any).id}`, {
-        ...formInvoice.value,
-        paid_amount: formInvoice.value.paid_amount || 0
-      })
+      res = await axios.put(`/api/invoices/${(formInvoice.value as any).id}`, payload)
     } else {
-      res = await axios.post('/api/invoices', {
-        ...formInvoice.value,
-        paid_amount: formInvoice.value.paid_amount || 0
-      })
+      res = await axios.post('/api/invoices', payload)
     }
     showFormModal.value = false
     fetchInvoices()
     selectInvoice(res.data.id)
   } catch (err: any) {
-    alert(err.response?.data?.error || 'Failed to save invoice.')
+    if (err.response?.data?.errors) {
+      const messages = Object.values(err.response.data.errors).flat().join('\n')
+      alert(`Failed to save invoice:\n${messages}`)
+    } else {
+      alert(err.response?.data?.error || 'Failed to save invoice.')
+    }
   }
 }
 

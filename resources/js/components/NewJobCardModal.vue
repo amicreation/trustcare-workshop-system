@@ -396,6 +396,14 @@ const selectExistingCustomer = (c: any) => {
                   <label class="form-label small-label text-muted">Year</label>
                   <input type="number" v-model="vehicleForm.year" class="form-control form-control-sm" :readonly="!isNewVehicle" />
                 </div>
+                <div class="col-6 col-md-4">
+                  <label class="form-label small-label text-muted">Engine No (Optional)</label>
+                  <input type="text" v-model="vehicleForm.engine_no" class="form-control form-control-sm font-monospace text-uppercase" placeholder="Optional Engine ID" :readonly="!isNewVehicle" />
+                </div>
+                <div class="col-6 col-md-4">
+                  <label class="form-label small-label text-muted">Chassis No (Optional)</label>
+                  <input type="text" v-model="vehicleForm.chassis_no" class="form-control form-control-sm font-monospace text-uppercase" placeholder="Optional Chassis ID" :readonly="!isNewVehicle" />
+                </div>
               </div>
             </div>
 

@@ -231,6 +231,14 @@ onMounted(() => {
                   <span class="text-muted d-block small-label">Odometer</span>
                   <span>{{ selectedVehicle.current_km }} km</span>
                 </div>
+                <div class="col-6">
+                  <span class="text-muted d-block small-label">Engine No</span>
+                  <span class="font-monospace text-uppercase">{{ selectedVehicle.engine_no || 'N/A' }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="text-muted d-block small-label">Chassis No</span>
+                  <span class="font-monospace text-uppercase">{{ selectedVehicle.chassis_no || 'N/A' }}</span>
+                </div>
               </div>
             </div>
 
@@ -384,6 +392,14 @@ onMounted(() => {
               <div class="col-12 col-md-4">
                 <label class="form-label small fw-bold text-muted uppercase">Body Color</label>
                 <input type="text" v-model="formVehicle.color" class="form-control" placeholder="e.g. RED" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-muted uppercase">Engine No (Optional)</label>
+                <input type="text" v-model="formVehicle.engine_no" class="form-control font-monospace text-uppercase" placeholder="Optional Engine ID" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-muted uppercase">Chassis No (Optional)</label>
+                <input type="text" v-model="formVehicle.chassis_no" class="form-control font-monospace text-uppercase" placeholder="Optional Chassis ID" />
               </div>
 
               <!-- Insurance Details -->

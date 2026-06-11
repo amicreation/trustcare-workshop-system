@@ -651,7 +651,9 @@ const printWindow = () => {
                     <span class="field-label">Make & Model:</span> {{ selectedInvoice.vehicle?.make }} {{ selectedInvoice.vehicle?.model }}
                   </td>
                   <td>
-                    <span class="field-label">Odometer:</span> {{ selectedInvoice.km_reading }} KMS
+                    <span class="field-label">Odometer:</span> {{ selectedInvoice.km_reading }} KMS<br>
+                    <span class="field-label">Chassis No:</span> {{ selectedInvoice.vehicle?.chassis_no || 'N/A' }}<br>
+                    <span class="field-label">Engine No:</span> {{ selectedInvoice.vehicle?.engine_no || 'N/A' }}
                   </td>
                 </tr>
               </table>

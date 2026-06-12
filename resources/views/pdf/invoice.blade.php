@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <title>Invoice {{ $invoice->invoice_no }}</title>
     <style>
+        @page {
+            margin: 15px 15px 50px 15px;
+        }
         body {
             font-family: 'DejaVu Sans', sans-serif;
             color: #111;
@@ -141,7 +144,10 @@
             padding-top: 4px;
         }
         .social-footer {
-            margin-top: 35px;
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
             border-top: 1px solid #eee;
             padding-top: 10px;
             text-align: center;
@@ -161,7 +167,7 @@
         }
         .social-footer img {
             vertical-align: middle;
-            margin-right: 4px;
+            margin-right: 8px;
             width: 12px;
             height: 12px;
         }

@@ -1063,6 +1063,9 @@ const printWindow = () => {
   margin: 0 auto;
   font-family: 'Inter', sans-serif;
   color: #111 !important;
+  position: relative;
+  padding-bottom: 60px !important;
+  box-sizing: border-box;
 }
 
 .letter-spacing-1 {
@@ -1233,7 +1236,10 @@ const printWindow = () => {
 }
 
 .social-footer {
-  margin-top: 35px;
+  position: absolute;
+  bottom: 20px;
+  left: 3rem;
+  right: 3rem;
   border-top: 1px solid #e5e7eb;
   padding-top: 10px;
   text-align: center;
@@ -1255,7 +1261,7 @@ const printWindow = () => {
 }
 .social-footer img {
   vertical-align: middle;
-  margin-right: 4px;
+  margin-right: 8px;
   width: 12px;
   height: 12px;
 }

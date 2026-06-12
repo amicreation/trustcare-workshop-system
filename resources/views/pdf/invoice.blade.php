@@ -158,8 +158,7 @@
                 <div class="workshop-tagline">{{ $settings['tagline'] ?? 'Driven by Trust, Powered by Skill' }}</div>
                 <div class="workshop-details">
                     {{ $settings['address'] ?? 'Near Vaishnodevi Circle, Ahmedabad' }}<br>
-                    Contact: {{ $settings['mobile'] ?? '8200695660 | 9512660711' }} | Email: {{ $settings['email'] ?? 'info@trustcare.com' }}<br>
-                    <strong>GSTIN:</strong> {{ $settings['gst'] ?? '24AAAAT0000A1Z1' }}
+                    Contact: {{ $settings['mobile'] ?? '8200695660 | 9512660711' }} | Email: {{ $settings['email'] ?? 'info@trustcare.com' }}
                 </div>
             </td>
             <td style="width: 35%; text-align: right; vertical-align: middle;">
@@ -238,10 +237,6 @@
         <tr>
             <td style="font-weight: bold;">Labour Total:</td>
             <td class="text-right font-mono">₹{{ number_format($invoice->labour_total, 2) }}</td>
-        </tr>
-        <tr>
-            <td style="font-weight: bold;">GST Total:</td>
-            <td class="text-right font-mono">₹{{ number_format($invoice->gst_total, 2) }}</td>
         </tr>
         @if($invoice->discount > 0)
         <tr>

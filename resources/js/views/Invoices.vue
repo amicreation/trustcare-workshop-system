@@ -65,7 +65,7 @@ const tempItem = ref({
   qty: 1,
   rate: 0,
   cost: 0,
-  tax_percent: 18
+  tax_percent: 0
 })
 
 const templateTimeout = (fn: Function, delay: number) => setTimeout(fn, delay)
@@ -339,7 +339,7 @@ const addInvoiceItem = () => {
   
   const qtyNum = parseNumber(tempItem.value.qty, 1)
   const rateNum = parseNumber(tempItem.value.rate, 0)
-  const taxNum = parseNumber(tempItem.value.tax_percent, 18)
+  const taxNum = 0
   const costNum = parseNumber(tempItem.value.cost, 0)
 
   if (qtyNum <= 0) {
@@ -376,7 +376,7 @@ const addInvoiceItem = () => {
     qty: 1,
     rate: 0,
     cost: 0,
-    tax_percent: 18
+    tax_percent: 0
   }
 }
 
@@ -631,8 +631,7 @@ const printWindow = () => {
                     </div>
                     <div style="font-size: 10px; color: #444; margin-top: 5px; line-height: 1.4;">
                       {{ settingsStore.settings?.address || 'Near Vaishnodevi Circle, Ahmedabad' }}<br>
-                      Contact: {{ settingsStore.settings?.mobile || '8200695660 | 9512660711' }} | Email: {{ settingsStore.settings?.email || 'info@trustcare.com' }}<br>
-                      <strong>GSTIN:</strong> {{ settingsStore.settings?.gst || 'N/A' }}
+                      Contact: {{ settingsStore.settings?.mobile || '8200695660 | 9512660711' }} | Email: {{ settingsStore.settings?.email || 'info@trustcare.com' }}
                     </div>
                   </td>
                   <td style="width: 35%; text-align: right; vertical-align: middle; padding: 0; border: none !important; background: transparent !important; color: #111;">
@@ -720,10 +719,6 @@ const printWindow = () => {
                     <tr>
                       <td style="font-weight: bold; text-align: left; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;">Labour Total:</td>
                       <td style="text-align: right; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;" class="font-monospace">₹{{ parseFloat(selectedInvoice.labour_total).toFixed(2) }}</td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight: bold; text-align: left; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;">GST Total:</td>
-                      <td style="text-align: right; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;" class="font-monospace">₹{{ parseFloat(selectedInvoice.gst_total).toFixed(2) }}</td>
                     </tr>
                     <tr v-if="parseFloat(selectedInvoice.discount) > 0">
                       <td style="font-weight: bold; text-align: left; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #d71920;">Discount:</td>
@@ -824,7 +819,7 @@ const printWindow = () => {
                     <option value="Service">Outside job</option>
                   </select>
                 </div>
-                <div class="col-12 col-md-4 position-relative">
+                <div class="col-12 col-md-6 position-relative">
                   <label class="form-label small-label font-bold text-muted">Description</label>
                   <input 
                     type="text" 
@@ -854,10 +849,6 @@ const printWindow = () => {
                   <label class="form-label small-label font-bold text-muted">Rate (₹)</label>
                   <input type="number" v-model="tempItem.rate" class="form-control form-control-sm font-monospace" min="0" />
                 </div>
-                <div class="col-4 col-md-2">
-                  <label class="form-label small-label font-bold text-muted">GST Tax %</label>
-                  <input type="number" v-model="tempItem.tax_percent" class="form-control form-control-sm font-monospace" min="0" />
-                </div>
                 <div class="col-12 col-md-1">
                   <button class="btn btn-sm btn-danger w-100 py-1.5" type="button" @click="addInvoiceItem">
                     <Plus :size="14" />
@@ -874,8 +865,6 @@ const printWindow = () => {
                       <th class="text-center">Type</th>
                       <th class="text-center">Qty</th>
                       <th class="text-end">Rate</th>
-                      <th class="text-center">GST %</th>
-                      <th class="text-end">Tax Amount</th>
                       <th class="text-end pe-3">Subtotal</th>
                       <th class="text-center" style="width: 5%">Remove</th>
                     </tr>
@@ -886,8 +875,6 @@ const printWindow = () => {
                       <td class="text-center small">{{ item.type }}</td>
                       <td class="text-center font-monospace">{{ item.qty }}</td>
                       <td class="text-end font-monospace">₹{{ parseFloat(item.rate).toFixed(2) }}</td>
-                      <td class="text-center font-monospace">{{ item.tax_percent }}%</td>
-                      <td class="text-end font-monospace">₹{{ ((item.qty * item.rate * item.tax_percent) / 100).toFixed(2) }}</td>
                       <td class="text-end font-monospace fw-bold pe-3">₹{{ parseFloat(item.amount).toFixed(2) }}</td>
                       <td class="text-center">
                         <button class="btn btn-xs btn-outline-danger border-0 rounded-circle" type="button" @click="removeInvoiceItem(idx)">
@@ -922,10 +909,6 @@ const printWindow = () => {
                   <div class="d-flex justify-content-between border-bottom pb-1">
                     <span>Labour / Service Total:</span>
                     <strong class="font-monospace">₹{{ formCalculations.labourTotal.toFixed(2) }}</strong>
-                  </div>
-                  <div class="d-flex justify-content-between border-bottom pb-1">
-                    <span>Calculated GST Tax:</span>
-                    <strong class="font-monospace">₹{{ formCalculations.gstTotal.toFixed(2) }}</strong>
                   </div>
                   
                   <!-- Adjustments: Discount / Paid Cash -->

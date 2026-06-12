@@ -183,10 +183,7 @@ onMounted(() => {
                   <label class="form-label small fw-bold text-muted uppercase">Email Address</label>
                   <input type="email" v-model="formSettings.email" class="form-control" placeholder="info@company.com" required />
                 </div>
-                <div class="col-12">
-                  <label class="form-label small fw-bold text-muted uppercase">Workshop GSTIN Identification</label>
-                  <input type="text" v-model="formSettings.gst" class="form-control font-monospace text-uppercase" placeholder="15-character GSTIN number" />
-                </div>
+
 
                 <!-- Prefixes -->
                 <div class="col-12 pt-2 border-top">

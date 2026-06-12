@@ -192,7 +192,6 @@ const executeDeleteCustomer = async () => {
                     <th class="ps-4">Name</th>
                     <th>Mobile</th>
                     <th>Location</th>
-                    <th>GSTIN</th>
                     <th class="text-end pe-4">Actions</th>
                   </tr>
                 </thead>
@@ -213,9 +212,6 @@ const executeDeleteCustomer = async () => {
                       <span v-if="c.alternate_mobile" class="text-muted small">Alt: {{ c.alternate_mobile }}</span>
                     </td>
                     <td>{{ c.city }}</td>
-                    <td>
-                      <span class="badge bg-secondary font-monospace">{{ c.gst || 'N/A' }}</span>
-                    </td>
                     <td class="text-end pe-4" @click.stop>
                       <button class="btn btn-sm btn-outline-secondary me-2 btn-icon" @click="openEditModal(c)" title="Edit">
                         <Edit :size="14" />
@@ -397,10 +393,7 @@ const executeDeleteCustomer = async () => {
                 <label class="form-label small fw-bold text-muted uppercase">PIN Code</label>
                 <input type="text" v-model="formCustomer.pin" class="form-control" placeholder="6-digit pin code" />
               </div>
-              <div class="col-12">
-                <label class="form-label small fw-bold text-muted uppercase">GSTIN</label>
-                <input type="text" v-model="formCustomer.gst" class="form-control font-monospace" placeholder="15-digit GSTIN details (optional)" />
-              </div>
+
               <div class="col-12">
                 <label class="form-label small fw-bold text-muted uppercase">Customer Notes</label>
                 <textarea v-model="formCustomer.notes" class="form-control" rows="2" placeholder="Reputation, special vehicle handling guidelines..."></textarea>

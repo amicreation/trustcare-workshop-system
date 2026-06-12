@@ -32,7 +32,7 @@ const formItem = ref({
   unit: 'Pcs',
   purchase_price: 0,
   selling_price: 0,
-  gst_percent: 18,
+  gst_percent: 0,
   current_stock: 0,
   minimum_stock: 5
 })
@@ -118,7 +118,7 @@ const openNewItemModal = () => {
     unit: 'Pcs',
     purchase_price: 0,
     selling_price: 0,
-    gst_percent: 18,
+    gst_percent: 0,
     current_stock: 0,
     minimum_stock: 5
   }
@@ -350,7 +350,6 @@ const saveStockAdjustment = async () => {
                   <th>Item Name</th>
                   <th>Category</th>
                   <th>Purchase / Sale</th>
-                  <th>Tax</th>
                   <th>Current Stock</th>
                   <th class="text-end pe-4">Actions</th>
                 </tr>
@@ -367,7 +366,6 @@ const saveStockAdjustment = async () => {
                     <div>Purchase: ₹{{ parseFloat(item.purchase_price).toFixed(2) }}</div>
                     <div class="text-danger fw-bold">Sale: ₹{{ parseFloat(item.selling_price).toFixed(2) }}</div>
                   </td>
-                  <td>{{ item.gst_percent }}%</td>
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       <span class="fw-bold fs-5" :class="item.current_stock <= item.minimum_stock ? 'text-danger' : 'text-success'">
@@ -528,10 +526,7 @@ const saveStockAdjustment = async () => {
                 <label class="form-label small fw-bold text-muted uppercase">Selling Price (₹)</label>
                 <input type="number" step="0.01" v-model="formItem.selling_price" class="form-control" required />
               </div>
-              <div class="col-12 col-md-4">
-                <label class="form-label small fw-bold text-muted uppercase">GST Rate (%)</label>
-                <input type="number" step="0.1" v-model="formItem.gst_percent" class="form-control" required />
-              </div>
+
               <div class="col-12 col-md-4">
                 <label class="form-label small fw-bold text-muted uppercase">Current Stock</label>
                 <input type="number" v-model="formItem.current_stock" class="form-control" :disabled="editItemMode" required />

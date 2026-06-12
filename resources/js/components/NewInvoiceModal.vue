@@ -48,7 +48,7 @@ const tempItem = ref({
   qty: 1,
   rate: 0,
   cost: 0,
-  tax_percent: 18
+  tax_percent: 0
 })
 
 // Auto-lookup & auto-create states
@@ -391,7 +391,7 @@ const addInvoiceItem = () => {
   
   const qtyNum = parseNumber(tempItem.value.qty, 1)
   const rateNum = parseNumber(tempItem.value.rate, 0)
-  const taxNum = parseNumber(tempItem.value.tax_percent, 18)
+  const taxNum = 0
   const costNum = parseNumber(tempItem.value.cost, 0)
 
   if (qtyNum <= 0) {
@@ -428,7 +428,7 @@ const addInvoiceItem = () => {
     qty: 1,
     rate: 0,
     cost: 0,
-    tax_percent: 18
+    tax_percent: 0
   }
 }
 
@@ -740,7 +740,7 @@ const selectExistingCustomer = (c: any) => {
                   <option value="Service">Outside job</option>
                 </select>
               </div>
-              <div class="col-12 col-md-4 position-relative">
+              <div class="col-12 col-md-6 position-relative">
                 <label class="form-label small-label text-muted">Description</label>
                 <input 
                   type="text" 
@@ -770,10 +770,6 @@ const selectExistingCustomer = (c: any) => {
                 <label class="form-label small-label text-muted">Rate (₹)</label>
                 <input type="number" v-model="tempItem.rate" class="form-control form-control-sm font-monospace" min="0" />
               </div>
-              <div class="col-4 col-md-2">
-                <label class="form-label small-label text-muted">GST Tax %</label>
-                <input type="number" v-model="tempItem.tax_percent" class="form-control form-control-sm font-monospace" min="0" />
-              </div>
               <div class="col-12 col-md-1">
                 <button class="btn btn-sm btn-danger w-100 py-1.5" type="button" @click="addInvoiceItem">
                   <Plus :size="14" />
@@ -790,7 +786,6 @@ const selectExistingCustomer = (c: any) => {
                     <th class="text-center">Type</th>
                     <th class="text-center">Qty</th>
                     <th class="text-end">Rate</th>
-                    <th class="text-center">GST %</th>
                     <th class="text-end pe-3">Subtotal</th>
                   </tr>
                 </thead>
@@ -800,7 +795,6 @@ const selectExistingCustomer = (c: any) => {
                     <td class="text-center">{{ item.type }}</td>
                     <td class="text-center font-monospace">{{ item.qty }}</td>
                     <td class="text-end font-monospace">₹{{ item.rate }}</td>
-                    <td class="text-center font-monospace">{{ item.tax_percent }}%</td>
                     <td class="text-end pe-3 font-monospace d-flex justify-content-between align-items-center">
                       <span>₹{{ item.amount.toFixed(2) }}</span>
                       <button type="button" class="btn btn-sm btn-outline-danger border-0 py-0 px-1" @click="removeInvoiceItem(idx)">
@@ -809,7 +803,7 @@ const selectExistingCustomer = (c: any) => {
                     </td>
                   </tr>
                   <tr v-if="formInvoice.items.length === 0">
-                    <td colspan="6" class="text-center py-3 text-muted">No line items added yet. Please use the form above to add parts or services.</td>
+                    <td colspan="5" class="text-center py-3 text-muted">No line items added yet. Please use the form above to add parts or services.</td>
                   </tr>
                 </tbody>
               </table>
@@ -856,10 +850,7 @@ const selectExistingCustomer = (c: any) => {
                   <td class="py-1 fw-bold text-muted">Labour/Service Subtotal:</td>
                   <td class="py-1 text-end font-monospace">₹{{ formCalculations.labourTotal.toFixed(2) }}</td>
                 </tr>
-                <tr class="border-bottom">
-                  <td class="py-1 fw-bold text-muted">GST Tax Total:</td>
-                  <td class="py-1 text-end font-monospace">₹{{ formCalculations.gstTotal.toFixed(2) }}</td>
-                </tr>
+
                 <tr class="border-bottom" v-if="parseFloat(formInvoice.discount) > 0">
                   <td class="py-1 fw-bold text-danger">Discount:</td>
                   <td class="py-1 text-end text-danger font-monospace">-₹{{ parseFloat(formInvoice.discount || 0).toFixed(2) }}</td>

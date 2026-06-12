@@ -418,6 +418,7 @@ const executeDeleteVehicle = async () => {
                   <option value="DIESEL">DIESEL</option>
                   <option value="CNG">CNG</option>
                   <option value="ELECTRIC">ELECTRIC</option>
+                  <option value="HYBRID">HYBRID</option>
                 </select>
               </div>
               <div class="col-12 col-md-4">

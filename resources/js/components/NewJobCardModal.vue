@@ -45,7 +45,7 @@ const vehicleForm = ref({
   make: '',
   model: '',
   year: new Date().getFullYear(),
-  fuel_type: 'Petrol',
+  fuel_type: 'PETROL',
   chassis_no: '',
   engine_no: ''
 })
@@ -98,7 +98,7 @@ watch(() => props.show, (newVal) => {
       make: '',
       model: '',
       year: new Date().getFullYear(),
-      fuel_type: 'Petrol',
+      fuel_type: 'PETROL',
       chassis_no: '',
       engine_no: ''
     }
@@ -156,7 +156,7 @@ const checkVehicle = async (regNo: string) => {
       make: vehicle.make,
       model: vehicle.model,
       year: vehicle.year || new Date().getFullYear(),
-      fuel_type: vehicle.fuel_type || 'Petrol',
+      fuel_type: (vehicle.fuel_type || 'PETROL').toUpperCase(),
       chassis_no: vehicle.chassis_no || '',
       engine_no: vehicle.engine_no || ''
     }
@@ -385,11 +385,11 @@ const selectExistingCustomer = (c: any) => {
                 <div class="col-6 col-md-4">
                   <label class="form-label small-label text-muted">Fuel Type</label>
                   <select v-model="vehicleForm.fuel_type" class="form-select form-select-sm" :disabled="!isNewVehicle">
-                    <option value="Petrol">Petrol</option>
-                    <option value="Diesel">Diesel</option>
+                    <option value="PETROL">Petrol</option>
+                    <option value="DIESEL">Diesel</option>
                     <option value="CNG">CNG</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Hybrid">Hybrid</option>
+                    <option value="ELECTRIC">Electric</option>
+                    <option value="HYBRID">Hybrid</option>
                   </select>
                 </div>
                 <div class="col-6 col-md-4">

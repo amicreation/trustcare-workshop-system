@@ -102,3 +102,30 @@ If you are a developer or an AI coding agent modifying this codebase, you **must
 3. **Track Compiled Frontend Assets:** Do not add `/public/build` back to `.gitignore`. Before pushing any front-end changes (Vue/CSS/TS/TSX) to GitHub, **always run `npm run build`** locally so the compiled assets are pushed to GitHub.
 4. **Minimize Packages:** Do not add unnecessary Composer packages or Node dependencies to keep file sizes and inode counts small.
 5. **Preserve the `/deploy/migrate/{secret}` Route:** Do not delete or block the web-based migration route in `routes/web.php`. It is the only way to run database schema updates on the shared hosting server.
+
+---
+
+## 6. How to Shift and Run the Application on a New Machine (Local Setup)
+
+To copy the local program folder to a new computer:
+
+1. **Prerequisites on the New Machine**:
+   - Install **PHP (8.2/8.3/8.4)** and ensure `php` is added to the system Environment Variables `PATH`.
+   - Install **Node.js (v18/v20/v22)**.
+
+2. **Copy the Folder**:
+   - Copy the entire project folder (`trustcare/`) containing the code and database to the new machine.
+
+3. **Running the Application**:
+   - Inside the root of the project folder, double-click **`TrustCare Workshop ERP.lnk`** (the portable shortcut) or run **`start_servers.bat`** directly.
+   - The script will automatically:
+     1. Clean up any stale background processes on ports 8000 and 5173.
+     2. Open your default web browser to the dashboard page (`http://127.0.0.1:8000`).
+     3. Start both the backend Laravel server and the Vite dev server inside a single terminal window.
+
+4. **Recreating the Desktop Shortcut (Optional)**:
+   - If you want the shortcut on the new computer's Desktop, open PowerShell inside the project root and run:
+     ```powershell
+     powershell -ExecutionPolicy Bypass -File .\create_shortcut.ps1
+     ```
+     This will generate a custom-branded shortcut on the new machine's desktop.

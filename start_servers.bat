@@ -5,17 +5,9 @@ echo ===================================================
 echo.
 cd /d "E:\Codes\trustcare\trustcare"
 
-echo [1/3] Starting Laravel Backend Server...
-start "TrustCare Backend" cmd /k "php artisan serve"
-
-echo [2/3] Starting Vite Frontend Server...
-start "TrustCare Frontend" cmd /k "npm run dev"
-
-echo [3/3] Opening application in your browser...
-timeout /t 3 /nobreak > nul
+echo [1/2] Opening application in your browser...
 start "" "http://127.0.0.1:8000"
 
+echo [2/2] Launching Backend and Frontend Dev Servers concurrently...
 echo.
-echo Servers started successfully! Feel free to close this window.
-timeout /t 2 /nobreak > nul
-exit
+npx concurrently --kill-others "php artisan serve" "npm run dev"

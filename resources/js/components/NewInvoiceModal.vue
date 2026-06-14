@@ -842,27 +842,29 @@ const selectExistingCustomer = (c: any) => {
             <div class="col-12 col-md-6 bg-body p-3 rounded border">
               <span class="small fw-bold text-muted uppercase d-block mb-2">Invoice Cost Summary:</span>
               <table class="w-100 small">
-                <tr class="border-bottom">
-                  <td class="py-1 fw-bold text-muted">Parts Subtotal:</td>
-                  <td class="py-1 text-end font-monospace">₹{{ formCalculations.partsTotal.toFixed(2) }}</td>
-                </tr>
-                <tr class="border-bottom">
-                  <td class="py-1 fw-bold text-muted">Labour/Service Subtotal:</td>
-                  <td class="py-1 text-end font-monospace">₹{{ formCalculations.labourTotal.toFixed(2) }}</td>
-                </tr>
+                <tbody>
+                  <tr class="border-bottom">
+                    <td class="py-1 fw-bold text-muted">Parts Subtotal:</td>
+                    <td class="py-1 text-end font-monospace">₹{{ formCalculations.partsTotal.toFixed(2) }}</td>
+                  </tr>
+                  <tr class="border-bottom">
+                    <td class="py-1 fw-bold text-muted">Labour/Service Subtotal:</td>
+                    <td class="py-1 text-end font-monospace">₹{{ formCalculations.labourTotal.toFixed(2) }}</td>
+                  </tr>
 
-                <tr class="border-bottom" v-if="parseFloat(formInvoice.discount) > 0">
-                  <td class="py-1 fw-bold text-danger">Discount:</td>
-                  <td class="py-1 text-end text-danger font-monospace">-₹{{ parseFloat(formInvoice.discount || 0).toFixed(2) }}</td>
-                </tr>
-                <tr class="border-bottom">
-                  <td class="py-2 fw-bold text-danger fs-6">Grand Total:</td>
-                  <td class="py-2 text-end text-danger fw-bold font-monospace fs-6">₹{{ formCalculations.grandTotal.toFixed(2) }}</td>
-                </tr>
-                <tr>
-                  <td class="py-1 fw-bold text-warning">Balance Due:</td>
-                  <td class="py-1 text-end text-warning fw-bold font-monospace">₹{{ formCalculations.balanceDue.toFixed(2) }}</td>
-                </tr>
+                  <tr class="border-bottom" v-if="parseFloat(formInvoice.discount) > 0">
+                    <td class="py-1 fw-bold text-danger">Discount:</td>
+                    <td class="py-1 text-end text-danger font-monospace">-₹{{ parseFloat(formInvoice.discount || 0).toFixed(2) }}</td>
+                  </tr>
+                  <tr class="border-bottom">
+                    <td class="py-2 fw-bold text-danger fs-6">Grand Total:</td>
+                    <td class="py-2 text-end text-danger fw-bold font-monospace fs-6">₹{{ formCalculations.grandTotal.toFixed(2) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1 fw-bold text-warning">Balance Due:</td>
+                    <td class="py-1 text-end text-warning fw-bold font-monospace">₹{{ formCalculations.balanceDue.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>

@@ -304,7 +304,7 @@
         <table>
             <tr>
                 <td>
-                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjNTU1NTU1Ij48cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0yIC45LTIgMnYxMmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjZjMC0xLjEtLjktMi0yLTJ6bTAgNGwtOCA1LTgtNVY2bDggNSA4LTV2MnoiLz48L3N2Zz4=" />
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA70lEQVR4nO2VMUoDQRSG5xBGtA6IhXgJ7VLNzv+9YRuv4BW8QvAGlqnTmSJXCBYhkAOkSRAsJBFRBjepxOwmbprsg58ZHsP3D++9YZxrYlsAvTrlgK865Q5lsJS0+C+ofljLjUGROAMeJa32AK8SI7HWF96USNJEEjHGi6JBVeHPZnZlZreSXv7qwSCEcB1CuAFGJeBjoJNl2SXQL9VkSZ/Ak/f+XNKdpNkv5+bAvff+VFIX+Nhlit6AhzzPT9Iq6T3VuQC2kgHwuveYSpqaWYgxtpPSPuWqjGlZDQtVfge1yTUGHIVBr9YPpwm3Jb4BAVA14xyIuPcAAAAASUVORK5CYII=" />
                     <span>TrustcareWorkshop@gmail.com</span>
                 </td>
                 <td>

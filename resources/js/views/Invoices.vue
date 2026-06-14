@@ -712,6 +712,7 @@ const printWindow = () => {
                 <div style="width: 35%;">
                   <!-- Totals Table -->
                   <table style="width: 100%; border-collapse: collapse; margin-left: auto;">
+                    <tbody>
                     <tr>
                       <td style="font-weight: bold; text-align: left; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;">Parts Total:</td>
                       <td style="text-align: right; padding: 4px 8px; font-size: 10px; border-bottom: 1px solid #ddd; color: #111;" class="font-monospace">₹{{ parseFloat(selectedInvoice.parts_total).toFixed(2) }}</td>
@@ -728,12 +729,14 @@ const printWindow = () => {
                       <td style="font-weight: bold; text-align: left; padding: 8px 8px 4px 8px; font-size: 11px; border-bottom: none; color: #d71920;">Grand Total:</td>
                       <td style="text-align: right; padding: 8px 8px 4px 8px; font-size: 11px; border-bottom: none; color: #d71920; font-weight: bold;" class="font-monospace">₹{{ parseFloat(selectedInvoice.grand_total).toFixed(2) }}</td>
                     </tr>
+                  </tbody>
                   </table>
                 </div>
               </div>
 
               <!-- Signatures Table (Exactly like PDF) -->
               <table style="width: 100%; margin-top: 50px; border-collapse: collapse;">
+                <tbody>
                 <tr>
                   <td style="width: 50%; padding: 0; text-align: left; border: none !important; background: transparent !important;">
                     <div style="width: 180px; border-top: 1px solid #333; text-align: center; font-size: 9px; font-weight: bold; color: #555; padding-top: 4px;">Customer Signature</div>
@@ -742,14 +745,16 @@ const printWindow = () => {
                     <div style="width: 180px; border-top: 1px solid #333; text-align: center; font-size: 9px; font-weight: bold; color: #555; padding-top: 4px; margin-left: auto;">Authorized Signature</div>
                   </td>
                 </tr>
+              </tbody>
               </table>
 
               <!-- Social Details Footer -->
               <div class="social-footer">
                 <table>
+                  <tbody>
                   <tr>
                     <td>
-                      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjNTU1NTU1Ij48cGF0aCBkPSJNMjAgNEg0Yy0xLjEgMC0yIC45LTIgMnYxMmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjZjMC0xLjEtLjktMi0yLTJ6bTAgNGwtOCA1LTgtNVY2bDggNSA4LTV2MnoiLz48L3N2Zz4=" />
+                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA70lEQVR4nO2VMUoDQRSG5xBGtA6IhXgJ7VLNzv+9YRuv4BW8QvAGlqnTmSJXCBYhkAOkSRAsJBFRBjepxOwmbprsg58ZHsP3D++9YZxrYlsAvTrlgK865Q5lsJS0+C+ofljLjUGROAMeJa32AK8SI7HWF96USNJEEjHGi6JBVeHPZnZlZreSXv7qwSCEcB1CuAFGJeBjoJNl2SXQL9VkSZ/Ak/f+XNKdpNkv5+bAvff+VFIX+Nhlit6AhzzPT9Iq6T3VuQC2kgHwuveYSpqaWYgxtpPSPuWqjGlZDQtVfge1yTUGHIVBr9YPpwm3Jb4BAVA14xyIuPcAAAAASUVORK5CYII=" />
                       <span>TrustcareWorkshop@gmail.com</span>
                     </td>
                     <td>
@@ -761,7 +766,8 @@ const printWindow = () => {
                       <span>TrustcareWorkshop@gmail.com</span>
                     </td>
                   </tr>
-                </table>
+                </tbody>
+              </table>
               </div>
             </div>
           </div>

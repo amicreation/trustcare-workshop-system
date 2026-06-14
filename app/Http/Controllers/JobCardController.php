@@ -15,8 +15,18 @@ class JobCardController extends Controller
         $year = date('Y');
         $prefix = "JC-{$year}-";
         
-        $count = JobCard::where('job_card_no', 'like', "{$prefix}%")->count();
-        $next = $count + 1;
+        $latest = JobCard::where('job_card_no', 'like', "{$prefix}%")
+            ->orderBy('job_card_no', 'desc')
+            ->first();
+
+        if ($latest) {
+            $parts = explode('-', $latest->job_card_no);
+            $lastNum = (int) end($parts);
+            $next = $lastNum + 1;
+        } else {
+            $next = 1;
+        }
+
         return $prefix . str_pad($next, 5, '0', STR_PAD_LEFT);
     }
 

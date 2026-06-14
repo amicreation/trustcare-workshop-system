@@ -21,8 +21,18 @@ class InvoiceController extends Controller
         $year = date('Y');
         $prefix = "TCW-{$year}-";
 
-        $count = InvoiceHeader::where('invoice_no', 'like', "{$prefix}%")->count();
-        $next = $count + 1;
+        $latest = InvoiceHeader::where('invoice_no', 'like', "{$prefix}%")
+            ->orderBy('invoice_no', 'desc')
+            ->first();
+
+        if ($latest) {
+            $parts = explode('-', $latest->invoice_no);
+            $lastNum = (int) end($parts);
+            $next = $lastNum + 1;
+        } else {
+            $next = 1;
+        }
+
         return $prefix . str_pad($next, 5, '0', STR_PAD_LEFT);
     }
 
